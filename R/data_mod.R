@@ -3,13 +3,14 @@
 #' @param df.test Dataframe with horizts as row and properties as colum
 #' @return new dataframe with add properities
 #' @author Gabriel Holz
+#' @import tidyverse
+#' @import aqp
 #' @export
 
 data_mod <- function(df.test, 
                      buffer_size = c(0, 0, 0, 2, 3), 
                      buffer_number = c(0,0,0,10,19),
                      nSides = c(0,0,0,3,25)){
-  library(tidyverse)
   if(length(buffer_size) != nrow(df.test) | length(buffer_number) != nrow(df.test)|
      length(nSides) != nrow(df.test)){
     return(warning("The lenth of one variable is not equal to df.test"))

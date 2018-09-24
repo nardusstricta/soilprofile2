@@ -15,5 +15,7 @@ License: MIT
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
-Imports: tidyverse, sf, smoothr
+Depends: tidyverse, sf, smoothr
+Imports: tidyverse, sf, smoothr, aqp
+Suggests: tidyverse, sf
 
