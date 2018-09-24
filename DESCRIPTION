@@ -1,12 +1,19 @@
-Package: soilprofile
+Package: soilprofile2
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Visualisation of Soilprofile
 Version: 0.1.0
-Author: Who wrote it
-Maintainer: The package maintainer <yourself@somewhere.net>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
-License: What license is it under?
+Author: Gabriel Holz
+Maintainer: The package maintainer <gabriholz@gmail.com>
+Description: This package provides functions to graphically represent 
+	     soil properties. Morphological data gathered in the field 
+	     such as horizon boundaries, root abundance and dimensions,
+	     skeletal shape, abundance and dimension as well as	
+	     meaningful soil color may be represented via the plot
+	     function. Different layers were disignd with the new SF packager, 
+	     and plottet with ggplot2.
+License: MIT
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
+Imports: tidyverse, sf, smoothr
+
