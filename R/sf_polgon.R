@@ -1,21 +1,14 @@
-#' Print "Hello world"
+#' sf polygon builder
 #'
-#' This is a simple function that, by default, prints "Hello world". You can
-#' customize the text to print (using the \code{to_print} argument) and add
-#' an exclamation point (\code{excited = TRUE}).
+#' merge coordinats with the input dataframe by name
 #'
-#' @param to_print A character string giving the text the function will print
-#' @param excited Logical value specifying whether to include an exclamation
-#'    point after the text
+#' @param database The original table with all variables
+#' @param df_polygon A long table with the columns name, x coordinate and y coordinate for each horizont. Build by the function \link[soilprofile2]{cord_setting}
 #'
-#' @return This function returns a phrase to print, with or without an
-#'    exclamation point added. As a side effect, this function also prints out
-#'    the phrase.
+#' @return This function returns an set of polygons as simple features. Each polygon represents a horizon defined by the name
 #'
 #' @examples
-#' hello_world()
-#' hello_world(excited = TRUE)
-#' hello_world(to_print = "Hi world")
+#' shape_areas()
 #'
 #' @export
 sf_polgon <- function(database, df_polygon){
@@ -27,6 +20,7 @@ sf_polgon <- function(database, df_polygon){
     st_cast("POLYGON") %>%
     st_cast("MULTIPOLYGON") %>%
     mutate(area = st_area(geometry)) %>% 
-    left_join(df, by = "name")
+    left_join(database, by = "name") %>% 
+    ungroup()
   return(shape_areas)
 }

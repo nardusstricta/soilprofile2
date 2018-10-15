@@ -1,4 +1,4 @@
-#' Print "Coordinate creator"
+#' "Coordinate creator"
 #'
 #' This is a simple function that, build coordinates for each horizont. So 
 #' With this you can easily build sf files 
@@ -16,7 +16,7 @@ cord_setting <- function(database = df, plot_width = 3){
   df <- database
   broad  <- max(df$to1)/plot_width #Einstellung der Breite
   df_select <- df %>% 
-    select(from1, to1, name) %>% 
+    dplyr::select(from1, to1, name) %>% 
     mutate(x1 = 0) %>% 
     mutate(y1 = -from1) %>% 
     mutate(x2 = broad) %>% 
@@ -30,11 +30,11 @@ cord_setting <- function(database = df, plot_width = 3){
     select(-from1, -to1)
   
   df_gatherY <- df_select %>% 
-    select(-seq(2,10,2)) %>% 
+    dplyr::select(-seq(2,10,2)) %>% 
     gather("Wert", "y", 2:6) 
   
   df_gatherX <- df_select %>% 
-    select(-seq(3,11,2)) %>%
+    dplyr::select(-seq(3,11,2)) %>%
     gather("Wert", "x", 2:6)
   
   
