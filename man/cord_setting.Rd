@@ -2,7 +2,7 @@
 % Please edit documentation in R/cord_setting.R
 \name{cord_setting}
 \alias{cord_setting}
-\title{Print "Coordinate creator"}
+\title{"Coordinate creator"}
 \usage{
 cord_setting(database = df, plot_width = 3)
 }

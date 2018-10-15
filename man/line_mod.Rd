@@ -4,10 +4,14 @@
 \alias{line_mod}
 \title{creates a sf line}
 \usage{
-line_mod(df_polygon)
+line_mod(df_polygon, mat_line, sm = T)
 }
 \arguments{
 \item{df_polygon}{A character string giving the text the function will print}
+
+\item{mat_line}{A character string giving the text the function will print}
+
+\item{sm}{A character string giving the text the function will print}
 }
 \value{
 This function returns a sf-file, which one line for each horizont

@@ -4,6 +4,8 @@
 #' In zukunft müssen die Parameter für die Form der Linie hier einstellbar sein
 #' 
 #' @param df_polygon A character string giving the text the function will print
+#' @param mat_line A character string giving the text the function will print
+#' @param sm A character string giving the text the function will print
 #' 
 #'
 #' @return This function returns a sf-file, which one line for each horizont
@@ -11,36 +13,37 @@
 #' @import sf
 #'
 #' @export
-line_mod <- function(df_polygon){
+
+line_mod <- function(df_polygon, mat_line, sm = T){
   tempX <- df_polygon %>% 
     group_by(name) %>% 
     filter(y == max(y)) %>% 
-    select(x, y, name)
+    select(x, y, name) %>% 
+    left_join(mat_line, by = "name") %>% 
+    unique()
   
-  #generate new X
-  new_gatherX <- tempX %>% 
+  #generate new X values, depends of mat_line number X for each group
+
+  new.df  <- data.frame(name = expand_x(numberX = mat_line$numberX, name = mat_line$name)) %>% 
+    left_join(tempX, by = "name") %>% 
     group_by(name) %>% 
-    do(genX_fun(.$x,.$name)) %>% 
-    gather("Nummer", "x", 2:13)
-  
-  #generate new Y
-  new_gatherY <- tempX %>% 
-    group_by(name) %>% 
-    do(genY_fun(.$y)) %>%
-    gather("Nummer", "y", 2:13)
-  
-  new.df <- data.frame(x = new_gatherX$x,
-                       y = new_gatherY$y, 
-                       name = new_gatherY$name)
-  
-  new.df <- new.df %>% 
-    na.omit()
+    mutate(x = sample(seq(min(x),max(x), .1), n(), replace = T)) %>% 
+    mutate(y = rnorm(n(), mean = max(y), sd = sd)) %>% 
+    union_all(tempX) %>% 
+    arrange(x) %>% 
+    dplyr::select(x, y, name) 
+
   
   #newdatat Line:
   df.line <- new.df %>% 
     st_as_sf(coords = c("x", "y")) %>%
     group_by(name) %>%
     summarise(do_union = F) %>% 
-    st_cast("LINESTRING")
+    st_cast("LINESTRING") 
+  
+  if(sm == T) {
+      df.line <- smooth(df.line, method = "ksmooth")
+    }
+  
   return(df.line)
 }
