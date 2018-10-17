@@ -13,21 +13,19 @@
 
 texture <- function(shape, fun_horizont, buffer = -0.5){
   
-  pars <- shape #%>% 
-    #dplyr::select(rgb_col, name)
+  pars <- shape$geometry
   
   inner_polygon <- st_buffer(pars, buffer) %>% 
     st_intersection(pars)
   
   out_line <- st_cast(pars, 'MULTILINESTRING', do_split=FALSE)
   
+  
   grid <- fun_horizont(polygon = inner_polygon)
   
-  output <- st_union(st_intersection(grid, inner_polygon))
-  
-  output <- st_geometry(st_union(out_line, output))
-  
-  return(output)
+  output_list <- st_sf(par_ID = c(1:(nrow(grid) +1)), nameC = shape$nameC, geometry = c(st_geometry(out_line), st_geometry(st_intersection(grid, inner_polygon))))
+
+  return(output_list)
   
   
 }

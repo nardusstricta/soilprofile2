@@ -7,9 +7,9 @@
 This function is used internally by the \link[soilprofile2]{line_mod} function. The corresponding Y values are created with the similar function \link[soilprofile2]{genY_fun}.
 }
 \arguments{
-\item{X}{A numeric vector that giving the start and end of the horizont line}
+\item{shape_mod}{A numeric vector that giving the start and end of the horizont line}
 
-\item{excited}{Logical value specifying whether to include an exclamation
+\item{point_shape}{Logical value specifying whether to include an exclamation
 point after the text}
 }
 \value{

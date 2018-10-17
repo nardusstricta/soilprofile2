@@ -2,8 +2,8 @@
 #'
 #' generates new layer for the soil skeleton
 #'
-#' @param X A numeric vector that giving the start and end of the horizont line
-#' @param excited Logical value specifying whether to include an exclamation
+#' @param shape_mod A numeric vector that giving the start and end of the horizont line
+#' @param point_shape Logical value specifying whether to include an exclamation
 #'    point after the text
 #'
 #' @return This function returns 12 X-value. 10 of this are new generatet by the \link[base]{runif}  Funktion 

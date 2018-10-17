@@ -17,7 +17,11 @@
 #' @export
 
 
-root <- function(Plant = 1, skeleton = spoint, start = c(6, 0)){
+root <- function(Plant = 1,
+                 skeleton = spoint,
+                 start = c(6, 0), 
+                 horizont = c(1:3), 
+                 smooth = "chaikin"){
   library(gsubfn)
   library(stringr)
   if(Plant == 1){
@@ -92,7 +96,7 @@ root <- function(Plant = 1, skeleton = spoint, start = c(6, 0)){
         mat[1,2] <- points$y1[1]
         mat[2,1] <- x
         mat[2,2] <- y
-        if(any(st_intersects(st_linestring(mat), skeleton$geometry[3],  sparse = F ))== T){
+        if(any(st_intersects(st_linestring(mat), skeleton$geometry[horizont],  sparse = F ))== T){
           print(counter)
           if(counter < 0.3){
             
@@ -171,6 +175,16 @@ root <- function(Plant = 1, skeleton = spoint, start = c(6, 0)){
     group_by(id) %>%
     summarise(do_union = F) %>% 
     st_cast('LINESTRING') 
-  return(line_sf)
+  
+  if(smooth != F){
+    lines_merged <- st_cast(st_line_merge(
+      st_union(st_cast(line_sf, "MULTILINESTRING"))), "LINESTRING")
+    
+    ff <- smooth(lines_merged, method = smooth)
+    return(ff)
+  }else{
+    return(line_sf)
+  }
+  
   
 }

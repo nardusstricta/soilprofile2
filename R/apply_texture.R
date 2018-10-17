@@ -14,16 +14,33 @@
 
 apply_texture <- function(fun_list, shape = shape_mod){
   texture_sf <- shape %>% 
-    group_by(name) %>% 
+    #group_by(name) %>% 
     left_join(fun_list, by = "nameC")  %>%
-    na.omit(fun) %>%
-    ungroup()
-  #mutate(geometry =  texture(.))
+    filter(!fun == "NULL") #komisch 
+    #ungroup()
+    #rowwise() %>%
+    #mutate(geometry = texture(shape = geometry,  fun_horizont = unlist(fun))) %>% funktioniert verliert aber den sf status geom ist aber noch dabei
+    #ungroup()
+    #
+  temp_geom <- st_sf(par_ID = 0, nameC = "empty", geometry = shape_mod$geometry[1])
+    
+
   
   for (i in 1:nrow(texture_sf)){
-    st_geometry(texture_sf)[i] <- texture(shape = texture_sf[i,], 
-                                          fun_horizont = texture_sf$fun[[i]])
+    temp_geom <- texture(shape = texture_sf[i,], 
+                                          fun_horizont = texture_sf$fun[[i]]) %>% 
+      rbind(temp_geom)
+    
   }
-  return(texture_sf)
+  temp_geom <- temp_geom[-nrow(temp_geom),]
+
+  
+  st_geometry(texture_sf) <- NULL
+  
+  erg <- texture_sf %>% 
+    right_join(temp_geom, "nameC") %>% 
+    st_sf()
+  
+  return(erg)
   
 }
