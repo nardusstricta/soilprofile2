@@ -4,7 +4,7 @@
 \alias{clean_cat}
 \title{Clip the point layer by horizons}
 \usage{
-clean_cat(temp, shape)
+clean_cat(temp, shape, Line)
 }
 \arguments{
 \item{temp}{The point layer, which has been build by the \link[soilprofile2]{smooth_trans} function.}

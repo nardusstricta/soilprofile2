@@ -4,7 +4,7 @@
 \alias{line_mod}
 \title{creates a sf line}
 \usage{
-line_mod(df_polygon, mat_line, sm = T)
+line_mod(df_polygon, mat_line, sm = T, seed = 33)
 }
 \arguments{
 \item{df_polygon}{A character string giving the text the function will print}

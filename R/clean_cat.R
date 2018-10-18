@@ -10,15 +10,21 @@
 #'
 #' @export
 
-clean_cat <- function(temp, shape){
-  temp2 <- temp 
-  shape_areas <- shape
-  temp3 <- temp2 %>% 
+clean_cat <- function(temp, shape, Line){
+  temp_int <- temp %>% 
+    rowwise() %>% 
+    mutate(int = if_else(any(st_intersects(geometry, Line, sparse = F)) == T, T, F)) %>%
+    filter(int == F) %>% 
+    st_sf()
+
+  temp3 <- temp_int %>% 
     select(name, geometry) %>%
     group_by(name) %>% 
     summarise(do_union = F) %>%
-    st_buffer(0.0) %>% 
+    st_buffer(0.0)  %>% 
     st_intersection(st_union(shape_areas))
+
+    
   return(temp3)
   
 }

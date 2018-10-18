@@ -38,7 +38,7 @@ apply_texture <- function(fun_list, shape = shape_mod){
   st_geometry(texture_sf) <- NULL
   
   erg <- texture_sf %>% 
-    right_join(temp_geom, "nameC") %>% 
+    full_join(temp_geom, c("nameC", "par_ID")) %>% 
     st_sf()
   
   return(erg)

@@ -14,15 +14,16 @@
 #'
 #' @export
 
-line_mod <- function(df_polygon, mat_line, sm = T){
+line_mod <- function(df_polygon, mat_line, sm = T, seed = 33){
   tempX <- df_polygon %>% 
     group_by(name) %>% 
     filter(y == max(y)) %>% 
     select(x, y, name) %>% 
     left_join(mat_line, by = "name") %>% 
-    unique()
+    ungroup()
   
   #generate new X values, depends of mat_line number X for each group
+  set.seed(seed)
 
   new.df  <- data.frame(name = expand_x(numberX = mat_line$numberX, name = mat_line$name)) %>% 
     left_join(tempX, by = "name") %>% 
@@ -35,14 +36,14 @@ line_mod <- function(df_polygon, mat_line, sm = T){
 
   
   #newdatat Line:
-  df.line <- new.df %>% 
+  df_line <- new.df %>% 
     st_as_sf(coords = c("x", "y")) %>%
     group_by(name) %>%
     summarise(do_union = F) %>% 
     st_cast("LINESTRING") 
   
   if(sm == T) {
-      df.line <- smooth(df.line, method = "ksmooth")
+      df.line <- smooth(df_line, method = "ksmooth")
     }
   
   return(df.line)

@@ -4,7 +4,8 @@
 \alias{smooth_trans}
 \title{Horizons transition}
 \usage{
-smooth_trans(Line, database = df, shape_mod = shape_mod)
+smooth_trans(Line, database = df, shape_mod = shape_mod, shape = 5,
+  rate = 10, seed = 33)
 }
 \arguments{
 \item{Line}{The line layer, which has been build by the \link[soilprofile2]{line_mod} function.}

@@ -16,6 +16,10 @@
 #' @export
 
 convex_poly <- function(nSides, area, xstart, ystart){
+  if(nSides < 7){
+    warning("Possibly the polygons are outside the buffer area!")
+  }
+  
   # Find the radius of the circumscribed circle, 
   # and the angle of each point if this was a regular polygon
   radius <- sqrt((2*area)/(nSides*sin((2*pi)/nSides)))
@@ -35,17 +39,16 @@ convex_poly <- function(nSides, area, xstart, ystart){
   m <- rbind(m, m[1,])
   current.area <- 0.5 * (sum(m[1:nSides,1] * 
                                m[2:(nSides+1),2]) - 
-                           sum(m[1:nSides,2]*m[2:(nSides+1),1]))
+                           sum(m[1:nSides,2] * m[2:(nSides+1),1]))
   
   points$x <- points$x * sqrt(area/current.area)
   points$y <- points$y * sqrt(area/current.area)
   p <- data.frame(x = points$x, y= points$y)
   poo <- rbind(p, p[1,])
-  po <- as.matrix(poo)
-  po2 <- st_linestring(po)
-  po3 <- st_cast(po2, 'MULTIPOINT')
-  po4 <- st_cast(po3, "POLYGON")
+  po2 <- st_linestring(as.matrix(poo)) %>% 
+    st_cast('MULTIPOINT') %>% 
+    st_cast("POLYGON")
   
-  return(po4)
+  return(po2)
   
 }

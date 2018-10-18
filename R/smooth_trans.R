@@ -10,33 +10,35 @@
 #'
 #' @export
 
-smooth_trans <- function(Line, database = df, shape_mod = shape_mod){
+smooth_trans <- function(Line, database = df, shape_mod = shape_mod, shape = 5, rate = 10, seed = 33){
   df <- as.data.frame(database)
-  df.line <- Line
+  df_line <- Line
   ##
   #Polygone erstelln um einen schwammigen Ünbergang zu gestalten:
   ##
   
   #1 Buffer:
-  df.buffer <- df.line %>% 
+  df_buffer <- df_line %>% 
     right_join(df, by = "name") %>% 
     group_by(name) %>% 
     st_buffer(dist = df$buffer_size, endCapStyle = "FLAT") %>% 
     filter(buffer_size != 0) %>%
-    dplyr::select(name, nSides)
+    st_intersection(shape_mod) %>% 
+    dplyr::select(name, nSides) 
   
   #Punkte auf dem Buffer verteilen:
-  df.sample  <- st_sample(df.buffer, size= df$buffer_number[df$buffer_number!= 0])
-  df.inter <-  st_intersection(df.buffer, df.sample)
+  set.seed(seed)
+  df_sample  <- st_sample(df_buffer, size= df$buffer_number[df$buffer_number!= 0])
+  df_inter <-  st_intersection(df_buffer, df_sample) #nur um die attribiutes zu behalten
   
   #Erstellen der Polygone: 
   #1.Varible Größe der Fläche und deren Verteilung 
   #2. Form der Fläche 
-  temp0 <- df.inter %>% 
+  temp0 <- df_inter %>% 
     group_by(name) %>% 
-    mutate(area_size = rgamma(n(), 0.5, 1)) #Flächen Verteilung der Polygone
+    mutate(area_size = rgamma(n(), shape = shape, rate = rate)) #Flächen Verteilung der Polygone
   
-  point_2_polygon <- df.inter %>%  #Koordinaten für die Funktion extrahieren:
+  point_2_polygon <- df_inter %>%  #Koordinaten für die Funktion extrahieren:
     st_coordinates()
   
   var <- as.data.frame(point_2_polygon)
