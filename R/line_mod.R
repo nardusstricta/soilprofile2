@@ -44,8 +44,8 @@ line_mod <- function(df_polygon, mat_line, sm = T, seed = 33){
     st_cast("LINESTRING") 
   
   if(sm == T) {
-      df.line <- smooth(df_line, method = "ksmooth")
+      df_line <- smooth(df_line, method = "ksmooth")
     }
   
-  return(df.line)
+  return(df_line)
 }
