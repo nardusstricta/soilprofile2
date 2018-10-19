@@ -22,7 +22,7 @@ clean_cat <- function(temp, shape, Line){
     group_by(name) %>% 
     summarise(do_union = F) %>%
     st_buffer(0.0)  %>% 
-    st_intersection(st_union(shape_areas))
+    st_intersection(st_union(shape))
 
     
   return(temp3)
