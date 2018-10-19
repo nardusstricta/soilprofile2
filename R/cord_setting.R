@@ -8,8 +8,6 @@
 #'
 #' @return This function returns a dataframe with four coordinates for each horizon. Additionally a column with the ID, which can be joind to the source data 
 #'
-#' @examples
-#' cord_setting(database = df, plot_width = 3)
 #'
 #' @export
 cord_setting <- function(database = df, plot_width = 3){

@@ -18,7 +18,3 @@ This function returns a dataframe with four coordinates for each horizon. Additi
 This is a simple function that, build coordinates for each horizont. So 
 With this you can easily build sf files
 }
-\examples{
-cord_setting(database = df, plot_width = 3)
-
-}

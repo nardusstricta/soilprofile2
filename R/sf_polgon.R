@@ -7,8 +7,6 @@
 #'
 #' @return This function returns an set of polygons as simple features. Each polygon represents a horizon defined by the name
 #'
-#' @examples
-#' shape_areas()
 #'
 #' @export
 sf_polgon <- function(database, df_polygon){

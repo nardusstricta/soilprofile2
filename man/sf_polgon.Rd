@@ -17,7 +17,3 @@ This function returns an set of polygons as simple features. Each polygon repres
 \description{
 merge coordinats with the input dataframe by name
 }
-\examples{
-shape_areas()
-
-}

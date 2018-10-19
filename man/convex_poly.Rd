@@ -23,7 +23,3 @@ This function builds polygons with given area and number of sides, with an given
 The area of a convex polygon can be found as: 
 deqn{ A = 1/2 * [(x1*y2 + x2*y3 + ... + xn*y1) - (y1*x2 + y2*x3 + ... + yn*x1)]}
 }
-\examples{
-smooth_trans()
-
-}

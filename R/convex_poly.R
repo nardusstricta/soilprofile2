@@ -10,8 +10,6 @@
 #' @param ystart startet Y Coordinats,  see \link[soilprofile2]{smoth_trans}
 #' @return A sl polygon layer with one line for each input point 
 #'
-#' @examples
-#' smooth_trans()
 #'
 #' @export
 
