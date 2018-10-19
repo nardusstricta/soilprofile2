@@ -11,6 +11,7 @@
 #' @return This function returns a sf-file, which one line for each horizont
 #' @import tidyverse
 #' @import sf
+#' @import smoothr
 #'
 #' @export
 

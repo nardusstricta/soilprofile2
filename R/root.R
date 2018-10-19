@@ -22,8 +22,6 @@ root <- function(Plant = 1,
                  start = c(6, 0), 
                  horizont = c(1:3), 
                  smooth = "chaikin"){
-  library(gsubfn)
-  library(stringr)
   if(Plant == 1){
     #Plant 1
     axiom="F"
