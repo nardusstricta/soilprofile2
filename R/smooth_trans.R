@@ -24,7 +24,7 @@ smooth_trans <- function(Line, database = df, shape_mod = shape_mod, shape = 5, 
     st_buffer(dist = df$buffer_size, endCapStyle = "FLAT") %>% 
     filter(buffer_size != 0) %>%
     st_intersection(shape_mod) %>% 
-    dplyr::select(name, nSides) 
+    dplyr::select(name, nSides, rate) 
   
   #Punkte auf dem Buffer verteilen:
   set.seed(seed)
@@ -36,7 +36,7 @@ smooth_trans <- function(Line, database = df, shape_mod = shape_mod, shape = 5, 
   #2. Form der Fläche 
   temp0 <- df_inter %>% 
     group_by(name) %>% 
-    mutate(area_size = rgamma(n(), shape = shape, rate = rate)) %>% 
+    mutate(area_size = rgamma(n(), shape = shape, rate = max(rate))) %>% 
     ungroup()
   
   point_2_polygon <- df_inter %>%  #Koordinaten für die Funktion extrahieren:
