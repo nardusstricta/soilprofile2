@@ -24,11 +24,11 @@ smooth_trans <- function(Line, database = df, shape_mod = shape_mod, shape = 5, 
     st_buffer(dist = df$buffer_size, endCapStyle = "FLAT") %>% 
     filter(buffer_size != 0) %>%
     st_intersection(shape_mod) %>% 
-    dplyr::select(name, nSides, rate) 
+    dplyr::select(name, nSides, rate, buffer_number) 
   
   #Punkte auf dem Buffer verteilen:
   set.seed(seed)
-  df_sample  <- st_sample(df_buffer, size= df$buffer_number[df$buffer_number!= 0])
+  df_sample  <- st_sample(df_buffer, size= df_buffer$buffer_number)
   df_inter <-  st_intersection(df_buffer, df_sample) #nur um die attribiutes zu behalten
   
   #Erstellen der Polygone: 
