@@ -10,7 +10,7 @@
 #'
 #' @export
 
-smooth_trans <- function(Line, database = df, shape_mod = shape_mod, shape = 5, rate = 10, seed = 33){
+smooth_trans <- function(Line, database = df, shape_mod = shape_mod, shape = 5, seed = 33){
   df <- as.data.frame(database)
   df_line <- Line
   ##
@@ -36,7 +36,8 @@ smooth_trans <- function(Line, database = df, shape_mod = shape_mod, shape = 5, 
   #2. Form der Fläche 
   temp0 <- df_inter %>% 
     group_by(name) %>% 
-    mutate(area_size = rgamma(n(), shape = shape, rate = rate)) #Flächen Verteilung der Polygone
+    mutate(area_size = rgamma(n(), shape = shape, rate = rate)) %>% 
+    ungroup()
   
   point_2_polygon <- df_inter %>%  #Koordinaten für die Funktion extrahieren:
     st_coordinates()

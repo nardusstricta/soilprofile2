@@ -6,7 +6,7 @@
 Funktion to modifide the transition of Soil horizon, by adding the Buffer- size, -number, and Shape of the Polygons, wich will be lay in the other horizont.}
 \usage{
 data_mod(df.test, buffer_size = c(0, 0, 0, 2, 3), buffer_number = c(0, 0, 0,
-  10, 19), nSides = c(0, 0, 0, 3, 25))
+  10, 19), nSides = c(0, 0, 0, 3, 25), rate = c(0, 0, 0, 10, 10))
 }
 \arguments{
 \item{df.test}{Dataframe with horizts as row and properties as colum}

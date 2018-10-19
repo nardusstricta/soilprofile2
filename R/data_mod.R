@@ -10,7 +10,8 @@
 data_mod <- function(df.test, 
                      buffer_size = c(0, 0, 0, 2, 3), 
                      buffer_number = c(0,0,0,10,19),
-                     nSides = c(0,0,0,3,25)){
+                     nSides = c(0,0,0,3,25),
+                     rate = c(0,0,0,10, 10)){
   if(length(buffer_size) != nrow(df.test) | length(buffer_number) != nrow(df.test)|
      length(nSides) != nrow(df.test)){
     return(warning("The lenth of one variable is not equal to df.test"))
@@ -28,7 +29,8 @@ data_mod <- function(df.test,
       mutate(rgb_col = aqp::munsell2rgb(hue_col, value_col, chroma_col)) %>% 
       mutate(buffer_size = buffer_size) %>% #Auzahl 
       mutate(buffer_number = buffer_number) %>% #Anzahl der Punkte
-      mutate(nSides = nSides)
+      mutate(nSides = nSides) %>% 
+      mutate(rate = rate)
   }
   return(df)
 }
