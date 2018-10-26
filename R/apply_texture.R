@@ -12,17 +12,19 @@
 #' @import sf
 #' @export
 
-apply_texture <- function(fun_list, shape = shape_mod){
+apply_texture <- function(shape){
+  data("fun_list")
+  data("df_par_wide")
   texture_sf <- shape %>% 
     #group_by(name) %>% 
     left_join(fun_list, by = "nameC")  %>%
     filter(!fun == "NULL") #komisch 
     #ungroup()
     #rowwise() %>%
-    #mutate(geometry = texture(shape = geometry,  fun_horizont = unlist(fun))) %>% funktioniert verliert aber den sf status geom ist aber noch dabei
+    #mutate(geometry = texture(shape = geometry,  fun_horizont = unlist(fun))) %>% funktioniert verliert aber den sf status geom ist aber noch dabei. Außer dem werden ja evt. neue Polygone erstellt
     #ungroup()
     #
-  temp_geom <- st_sf(par_ID = 0, nameC = "empty", geometry = shape_mod$geometry[1])
+  temp_geom <- st_sf(par_ID = 0, nameC = "empty", geometry = shape$geometry[1])
     
 
   
@@ -35,11 +37,8 @@ apply_texture <- function(fun_list, shape = shape_mod){
   temp_geom <- temp_geom[-nrow(temp_geom),]
 
   
-  st_geometry(texture_sf) <- NULL
-  
-  erg <- texture_sf %>% 
-    full_join(temp_geom, c("nameC", "par_ID")) %>% 
-    st_sf()
+  erg <- temp_geom %>% 
+    left_join(df_par_wide, by = c("nameC", "par_ID"))
   
   return(erg)
   

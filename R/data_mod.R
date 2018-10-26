@@ -7,16 +7,8 @@
 #' @import aqp
 #' @export
 
-data_mod <- function(df.test, 
-                     buffer_size = c(0, 0, 0, 2, 3), 
-                     buffer_number = c(0,0,0,10,19),
-                     nSides = c(0,0,0,3,25),
-                     rate = c(0,0,0,10, 10)){
-  if(length(buffer_size) != nrow(df.test) | length(buffer_number) != nrow(df.test)|
-     length(nSides) != nrow(df.test)){
-    return(warning("The lenth of one variable is not equal to df.test"))
-  }else{
-    df <- df.test %>% 
+data_mod <- function(df_org){
+    df <- df_org %>% 
       separate(depth, c("from1", "to1"), "-") %>% 
       mutate(nameC = name) %>%
       mutate(name = 1:nrow(df.test)) %>%
@@ -26,11 +18,6 @@ data_mod <- function(df.test,
       separate(temp, c("value_col", "chroma_col"), "/") %>% 
       mutate(value_col = as.numeric(value_col)) %>% 
       mutate(chroma_col = as.numeric(chroma_col)) %>% 
-      mutate(rgb_col = aqp::munsell2rgb(hue_col, value_col, chroma_col)) %>% 
-      mutate(buffer_size = buffer_size) %>% #Auzahl 
-      mutate(buffer_number = buffer_number) %>% #Anzahl der Punkte
-      mutate(nSides = nSides) %>% 
-      mutate(rate = rate)
-  }
+      mutate(rgb_col = aqp::munsell2rgb(hue_col, value_col, chroma_col))
   return(df)
 }

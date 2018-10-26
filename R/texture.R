@@ -11,7 +11,7 @@
 #' @import sf
 #' @export
 
-texture <- function(shape, fun_horizont, buffer = -0.5){
+texture <- function(shape, fun_horizont, buffer = -1){
   
   pars <- shape$geometry
   

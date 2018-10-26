@@ -4,13 +4,13 @@
 \alias{apply_texture}
 \title{This is a helper function which applies the texture function.}
 \usage{
-apply_texture(fun_list, shape = shape_mod)
+apply_texture(shape)
 }
 \arguments{
+\item{shape}{A sf tibble with a list fuction column and  a list geom column}
+
 \item{fun_list}{A list with a name column that contains as many horizon 
 shortcuts as possible and a column with the corresponding functions that create a pattern.}
-
-\item{shape}{A sf tibble with a list fuction column and  a list geom column}
 }
 \value{
 This function returns a new geometry of the sf-file equal to \link[soilprofile2]{texture} (which is used internally)
