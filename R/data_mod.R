@@ -11,7 +11,7 @@ data_mod <- function(df_org){
     df <- df_org %>% 
       separate(depth, c("from1", "to1"), "-") %>% 
       mutate(nameC = name) %>%
-      mutate(name = 1:nrow(df.test)) %>%
+      mutate(name = 1:nrow(df_org)) %>%
       mutate(from1 = as.numeric(from1)) %>% 
       mutate(to1 = as.numeric(to1)) %>% 
       separate(col, c("hue_col", "temp"), " ") %>% 

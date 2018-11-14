@@ -8,8 +8,9 @@
 #'
 #' @export
 
-sf_soil <- function(data, plot_width = 3, line_sm = T){
-  df <- data_mod(df.test)
+sf_soil <- function(data, plot_width = 3, line_sm = T, Line = F){
+  
+  df <- data_mod(data)
   
   df_polygon <- cord_setting(database = df, plot_width = plot_width)
   
@@ -21,6 +22,12 @@ sf_soil <- function(data, plot_width = 3, line_sm = T){
   df_line <- line_mod(df_polygon = df_polygon, mat_line = mat_line, sm = line_sm) 
   
   shape_mod  <- split_polygon(Polygon = shape_areas, Line = df_line)
-  return(shape_mod)
+  
+  if(Line == T){
+    return(df_line)
+  }else{
+    return(shape_mod)
+  }
+  
   
 }

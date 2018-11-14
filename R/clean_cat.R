@@ -10,7 +10,7 @@
 #'
 #' @export
 
-clean_cat <- function(temp, shape, Line){
+clean_cat <- function(temp, shape_mod, Line){
   temp_int <- temp %>% 
     rowwise() %>% 
     mutate(int = if_else(any(st_intersects(geometry, Line, sparse = F)) == T, T, F)) %>%

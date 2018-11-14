@@ -3,15 +3,16 @@
 #' This funktion modifide th horizons transitions. With this function you get waves, tongues and points as transition between the horizons. 
 #'
 #' @param Line The line layer, which has been build by the \link[soilprofile2]{line_mod} function.
-#' @param database The original table with the variables
 #' @param shape_mod The table modified by new lines  \link[soilprofile2]{split_polygon}
 #'
 #' @return A point layer with a polygons for the color transition 
 #'
 #' @export
 
-smooth_trans <- function(Line, database = df, shape_mod = shape_mod, shape = 5, seed = 33){
-  df <- as.data.frame(database)
+smooth_trans <- function(Line, shape_mod, shape = 5, seed = 33, clean_cut = T){
+  df <- shape_mod
+  st_geometry(df) <- NULL
+  
   df_line <- Line
   ##
   #Polygone erstelln um einen schwammigen Ünbergang zu gestalten:
@@ -67,5 +68,33 @@ smooth_trans <- function(Line, database = df, shape_mod = shape_mod, shape = 5, 
   }
   
   temp2$name <- tf1[,6] #Namen überschreinen
-  return(temp2)
+  if(clean_cut == T){
+    #clean cut 
+    temp_int <- temp2 %>% 
+      rowwise() %>% 
+      mutate(int = if_else(any(st_intersects(geometry, Line, sparse = F)) == T, T, F)) %>%
+      filter(int == F) %>% 
+      st_sf()
+    
+    temp3 <- temp_int %>% 
+      select(name, geometry) %>%
+      group_by(name) %>% 
+      summarise(do_union = F) %>%
+      st_buffer(0.0)  %>% 
+      st_intersection(st_union(shape_mod)) 
+    
+    erg <- shape_mod %>%
+      #filter(name %in% temp3$name) %>%
+      #rowwise() %>% 
+      mutate(geometry = ifelse(name %in% temp3$name, temp3$geometry, geometry))
+    erg <- erg %>% 
+      st_sf(geometry = erg$geometry)
+       
+      
+      
+    return(erg)
+  }else{
+    return(temp2)
+  }
+  
 }

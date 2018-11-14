@@ -8,6 +8,7 @@
 #'
 #' @export
 plot_soil <- function(data){
+  
   texture_sf <- apply_texture(shape = data)
   
   #Füllen der Standardeinstellungen:
