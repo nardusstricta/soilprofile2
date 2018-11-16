@@ -4,13 +4,10 @@
 \alias{smooth_trans}
 \title{Horizons transition}
 \usage{
-smooth_trans(Line, database = df, shape_mod = shape_mod, shape = 5,
-  seed = 33)
+smooth_trans(Line, shape_mod, shape = 5, seed = 33, clean_cut = T)
 }
 \arguments{
 \item{Line}{The line layer, which has been build by the \link[soilprofile2]{line_mod} function.}
-
-\item{database}{The original table with the variables}
 
 \item{shape_mod}{The table modified by new lines  \link[soilprofile2]{split_polygon}}
 }

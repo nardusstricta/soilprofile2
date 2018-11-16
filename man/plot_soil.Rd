@@ -4,7 +4,7 @@
 \alias{plot_soil}
 \title{wrapper function for plot}
 \usage{
-plot_soil(data)
+plot_soil(data, raster_list = NULL)
 }
 \arguments{
 \item{polygon}{A polygon-layer, which has been build by the \link[soilprofile2]{texture} function.}

@@ -7,7 +7,7 @@
 #' @return A unit sf layer with an parID column
 #'
 #' @export
-plot_soil <- function(data){
+plot_soil <- function(data, raster_list = NULL){
   
   texture_sf <- apply_texture(shape = data)
   
@@ -17,7 +17,14 @@ plot_soil <- function(data){
   plotOut <- texture_sf %>% 
     group_by(nameC) %>% 
     ggplot() +
-    geom_sf(fill = texture_sf$bgc, col = texture_sf$col, shape = texture_sf$pch) 
+    geom_sf(fill = texture_sf$bgc, col = texture_sf$col, shape = texture_sf$pch)
+    #geom_spraster_rgb(raster_list[[i]])
+    if(!is.null(raster_list)){
+      for(i in 1:length(raster_list)){
+        plotOut <- plotOut + RStoolbox::ggRGB(raster_list[[i]], 1,2,3, ggLayer = TRUE, alpha = 0.7)
+        
+      }
+    }
   
   return(plotOut)
 }

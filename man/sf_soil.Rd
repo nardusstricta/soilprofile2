@@ -4,7 +4,7 @@
 \alias{sf_soil}
 \title{wrapper function for shape_mod}
 \usage{
-sf_soil(data, plot_width = 3, line_sm = T)
+sf_soil(data, plot_width = 3, line_sm = T, Line = F)
 }
 \arguments{
 \item{polygon}{A polygon-layer, which has been build by the \link[soilprofile2]{texture} function.}

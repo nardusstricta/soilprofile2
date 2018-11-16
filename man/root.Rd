@@ -4,8 +4,8 @@
 \alias{root}
 \title{creates a root layer modelling by a L-System}
 \usage{
-root(Plant = 1, skeleton = spoint, start = c(6, 0), horizont = c(1:3),
-  smooth = "chaikin")
+root(Plant = 1, skeleton = spoint, start = c(6, 0),
+  horizont = c(1:3), smooth = "chaikin")
 }
 \arguments{
 \item{Plant}{a numeric value between 1 and 6 calling the stored L-system}
