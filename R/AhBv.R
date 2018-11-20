@@ -9,7 +9,7 @@
 #' @export
 
 
-AhBv <- function(polygon){
+AhBv <- function(polygon, ...){
   erg_line <- basic_line(polygon = polygon, cellnumber = 22, rotation = 12)
   erg_polygon <- basic_random_polygon(polygon = polygon, size = 0.5, number = 5, nSides =10, sm = T)
   erg_point <- basic_point(polygon = erg_polygon, cellsize = 4, random = F) %>% 

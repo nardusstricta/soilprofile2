@@ -19,7 +19,7 @@ basic_line <- function(polygon, cellnumber = 22, rotation = 12){
   x[seq(2,length(x), 2)] <- x[seq(2,length(x), 2)] + rotation
   df <- data.frame(x = x,
                    y = rep(st_bbox(polygon)[c("ymin", "ymax")], 
-                           cellnumber*2),
+                           cellnumber * 2),
                    id = rep(1:cellnumber, each = 2)
   )
   

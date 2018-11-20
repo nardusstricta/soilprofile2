@@ -8,8 +8,8 @@
 #'
 #' @export
 
-basic_polygon <- function(polygon, square = F){
-  st_make_grid(polygon, what = "polygons", square = square) %>% 
+basic_polygon <- function(polygon, cellsize, square = F){
+  st_make_grid(polygon, what = "polygons", cellsize = cellsize,  square = square) %>% 
     st_union()%>% 
     st_sf(parID = 1)
 }

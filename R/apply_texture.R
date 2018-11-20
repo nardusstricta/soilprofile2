@@ -13,17 +13,16 @@
 #' @export
 
 apply_texture <- function(shape){
+  #Data import:
   data("fun_list")
   data("df_par_wide")
+  
   texture_sf <- shape %>% 
-    #group_by(name) %>% 
-    left_join(fun_list, by = "nameC")  %>%
-    filter(!fun == "NULL") #komisch 
-    #ungroup()
-    #rowwise() %>%
-    #mutate(geometry = texture(shape = geometry,  fun_horizont = unlist(fun))) %>% funktioniert verliert aber den sf status geom ist aber noch dabei. Außer dem werden ja evt. neue Polygone erstellt
-    #ungroup()
-    #
+    left_join(fun_list, by = "nameC") %>% 
+    #rowwise() %>% 
+    mutate(fun = ifelse(is.null(unnest(fun)), 
+                        build_random_pattern, fun))
+  
   temp_geom <- st_sf(par_ID = 0, nameC = "empty", geometry = shape$geometry[1])
     
 
@@ -36,6 +35,10 @@ apply_texture <- function(shape){
   }
   temp_geom <- temp_geom[-nrow(temp_geom),]
 
+  ##
+  #add random pattern:
+  ##
+  
   
   erg <- temp_geom %>% 
     left_join(df_par_wide, by = c("nameC", "par_ID"))

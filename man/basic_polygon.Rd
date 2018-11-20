@@ -4,7 +4,7 @@
 \alias{basic_polygon}
 \title{basic polygon}
 \usage{
-basic_polygon(polygon, square = F)
+basic_polygon(polygon, cellsize, square = F)
 }
 \arguments{
 \item{polygon}{A polygon-layer, which has been build by the \link[soilprofile2]{texture} function.}

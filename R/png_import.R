@@ -6,7 +6,7 @@
 #' 
 #' @param path a numeric value between 1 and 6 calling the stored L-system
 #' @param mod_sf A layer with the skeleton content as polygon (bei fehlen gibt es noch einen Fehler)
-
+#' @export 
 png_import <- function(path, mod_sf){
   #import file:
   path_list <- list.files(path, full.names = F, pattern ="*png") 

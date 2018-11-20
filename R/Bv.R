@@ -8,6 +8,6 @@
 #'
 #' @export
 
-Bv <- function(polygon){
+Bv <- function(polygon, ...){
   basic_line(polygon = polygon, cellnumber = 22, rotation = 12)
 }
