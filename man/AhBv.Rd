@@ -4,7 +4,7 @@
 \alias{AhBv}
 \title{AhBv}
 \usage{
-AhBv(polygon)
+AhBv(polygon, ...)
 }
 \arguments{
 \item{polygon}{A polygon-layer, which has been build by the \link[soilprofile2]{texture} function.}

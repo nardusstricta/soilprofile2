@@ -4,7 +4,7 @@
 \alias{texture}
 \title{creates a pattern with a given layer and function}
 \usage{
-texture(shape, fun_horizont, buffer = -1)
+texture(shape, fun_horizont, buffer = -1, ...)
 }
 \arguments{
 \item{shape}{A sf tibble with a list fuction column and  a list geom column}

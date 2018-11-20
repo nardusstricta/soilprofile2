@@ -1,5 +1,17 @@
-build_random_pattern <- function(polygon, nameC){
-  
+#' build random texture 
+#'
+#' The actual task is to join the horizon file with the corresponding functions  and to apply it   
+#' 
+#' @param polygon A sf tibble with a list fuction column and  a list geom column
+#' @param ... A list with a name column that contains as many horizon 
+#' shortcuts as possible and a column with the corresponding functions that create a pattern.  
+#' 
+#' @return This function returns a new geometry of the sf-file equal to \link[soilprofile2]{texture} (which is used internally)
+#' 
+#' @export
+
+build_random_pattern <- function(polygon, ...){
+  par_list <- list(...)
   random_par <- list(radnom_line <- 
                        function(polygon){
                          basic_line(
@@ -33,7 +45,8 @@ build_random_pattern <- function(polygon, nameC){
   erg_sf <- st_sf(par_ID = 1, geometry = st_geometry(layer1)) 
   par_ID <- 1
   size <- rnorm(1, mean = 1, sd = 1)
-  number_char <- nchar(nameC)
+  #number_char <- nameC
+  number_char <- nchar(par_list[1])
   for(i in 1:length(number_char-2)){
     par_ID <- par_ID + 1
     size  <- size * .5
@@ -72,3 +85,4 @@ build_random_pattern <- function(polygon, nameC){
   }
   
 }
+

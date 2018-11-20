@@ -4,7 +4,7 @@
 \alias{Ah}
 \title{Ah}
 \usage{
-Ah(polygon)
+Ah(polygon, ...)
 }
 \arguments{
 \item{polygon}{A polygon-layer, which has been build by the \link[soilprofile2]{texture} function.}

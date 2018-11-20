@@ -19,24 +19,21 @@ apply_texture <- function(shape){
   
   texture_sf <- shape %>% 
     left_join(fun_list, by = "nameC") %>% 
-    #rowwise() %>% 
-    mutate(fun = ifelse(is.null(unnest(fun)), 
-                        build_random_pattern, fun))
+    mutate(fun = ifelse(fun == "NULL", c(build_random_pattern), fun)) 
   
   temp_geom <- st_sf(par_ID = 0, nameC = "empty", geometry = shape$geometry[1])
-    
-
   
   for (i in 1:nrow(texture_sf)){
-    temp_geom <- texture(shape = texture_sf[i,], 
-                                          fun_horizont = texture_sf$fun[[i]]) %>% 
+    temp_geom <- texture(shape = texture_sf[i,],
+                         fun_horizont = texture_sf$fun[[i]]
+    ) %>% 
       rbind(temp_geom)
-    
+
   }
   temp_geom <- temp_geom[-nrow(temp_geom),]
 
   ##
-  #add random pattern:
+  #add graphic pars:
   ##
   
   
@@ -46,3 +43,6 @@ apply_texture <- function(shape){
   return(erg)
   
 }
+
+
+
