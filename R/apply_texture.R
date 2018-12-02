@@ -15,13 +15,15 @@
 apply_texture <- function(shape){
   #Data import:
   data("fun_list")
-  data("df_par_wide")
+  data("df_par_wide.rda")
   
   texture_sf <- shape %>% 
     left_join(fun_list, by = "nameC") %>% 
     mutate(fun = ifelse(fun == "NULL", c(build_random_pattern), fun)) 
   
-  temp_geom <- st_sf(par_ID = 0, nameC = "empty", geometry = shape$geometry[1])
+  temp_geom <- st_sf(par_ID = 0,
+                     nameC = "empty",
+                     geometry = shape$geometry[1])
   
   for (i in 1:nrow(texture_sf)){
     temp_geom <- texture(shape = texture_sf[i,],
@@ -38,7 +40,7 @@ apply_texture <- function(shape){
   
   
   erg <- temp_geom %>% 
-    left_join(df_par_wide, by = c("nameC", "par_ID"))
+    left_join(df_par_wide, by = c("nameC", "par_ID")) 
   
   return(erg)
   

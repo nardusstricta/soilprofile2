@@ -12,16 +12,20 @@ plot_soil <- function(data, raster_list = NULL){
   texture_sf <- apply_texture(shape = data)
   
   #Füllen der Standardeinstellungen:
-  texture_sf$col <- ifelse(is.na(texture_sf$col), "black", texture_sf$col)
+  texture_sf <- par_default(texture_sf)
+  
   
   plotOut <- texture_sf %>% 
     group_by(nameC) %>% 
     ggplot() +
-    geom_sf(fill = texture_sf$bgc, col = texture_sf$col, shape = texture_sf$pch)
+    geom_sf(fill = texture_sf$bgc, col = texture_sf$col, shape = texture_sf$pch, 
+            linetype = texture_sf$linetype)
+  
     #geom_spraster_rgb(raster_list[[i]])
     if(!is.null(raster_list)){
       for(i in 1:length(raster_list)){
-        plotOut <- plotOut + RStoolbox::ggRGB(raster_list[[i]], 1,2,3, ggLayer = TRUE, alpha = 0.7)
+        plotOut <- plotOut + RStoolbox::ggRGB(raster_list[[i]], 1,2,3,
+                                              ggLayer = TRUE, alpha = 0.7)
         
       }
     }

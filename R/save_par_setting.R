@@ -21,7 +21,7 @@ save_par_setting <- function(name, variable, value, par_ID){
   
   df_par_wide <- df_par_wide_temp %>% 
     bind_rows(df_par_wide)
-  devtools::use_data(df_par_wide, overwrite = TRUE)
+  usethis::use_data(df_par_wide, overwrite = TRUE)
 }
 
 
