@@ -10,10 +10,6 @@
 #' @param start The start coordinates (x and y) given in a vector 
 #' 
 #' @return This function returns a new sf-line geometry with an id column 
-#' @import tidyverse
-#' @import sf
-#' @import gsubfn
-#' @import stringr
 #' @export
 
 

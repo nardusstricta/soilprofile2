@@ -2,7 +2,7 @@
 % Please edit documentation in R/par_default.R
 \name{par_default}
 \alias{par_default}
-\title{fill standard par}
+\title{par_default}
 \usage{
 par_default(polygon)
 }

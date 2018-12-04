@@ -3,8 +3,6 @@
 #' @param df.test Dataframe with horizts as row and properties as colum
 #' @return new dataframe with add properities
 #' @author Gabriel Holz
-#' @import tidyverse
-#' @import aqp
 #' @export
 
 data_mod <- function(df_org){

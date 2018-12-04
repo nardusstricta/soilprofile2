@@ -7,8 +7,6 @@
 #' @param buffer A negetive numeric value that defines the distance to the outer boundary. The default is -0.5
 #' 
 #' @return This function returns a new geometry of the sf-file
-#' @import tidyverse
-#' @import sf
 #' @export
 
 texture <- function(shape, fun_horizont, buffer = -1, ...){

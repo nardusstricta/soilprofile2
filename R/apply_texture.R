@@ -7,9 +7,7 @@
 #' shortcuts as possible and a column with the corresponding functions that create a pattern.  
 #' 
 #' @return This function returns a new geometry of the sf-file equal to \link[soilprofile2]{texture} (which is used internally)
-#' 
-#' @import tidyverse
-#' @import sf
+
 #' @export
 
 apply_texture <- function(shape){

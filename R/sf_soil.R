@@ -8,7 +8,7 @@
 #'
 #' @export
 
-sf_soil <- function(data, plot_width = 3, line_sm = T, Line = F){
+sf_soil <- function(data, plot_width = 3, line_sm = T, Line = F, sdC, ...){
   
   df <- data_mod(data)
   
@@ -16,9 +16,16 @@ sf_soil <- function(data, plot_width = 3, line_sm = T, Line = F){
   
   shape_areas <- sf_polgon(database = df, df_polygon = df_polygon)
   
-  mat_line <- data.frame(name= unique(df$name), numberX = df$numberX, sd = df$sd)
+  if(any(colnames(df) %in% "name") && 
+     any(colnames(df) %in% "numberX") &&
+     any(colnames(df) %in% "sd")){
+    mat_line <- reactive(data.frame(name= unique(df$name), numberX = df$numberX, sd = c(0,0,0,1, 1)))
+  }else{
+    mat_line <- ...
+  }
   
-  df_line <- line_mod(df_polygon = df_polygon, mat_line = mat_line, sm = line_sm) 
+  
+  df_line <- line_mod(df_polygon = df_polygon, mat_line = mat_line(), sm = line_sm) 
  
   
   shape_mod  <- split_polygon(Polygon = shape_areas, Line = df_line)

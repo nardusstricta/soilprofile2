@@ -8,8 +8,7 @@
 #'
 #' @return This function returns 12 X-value. 10 of this are new generatet by the \link[base]{runif}  Funktion 
 #' @usage This function is used internally by the \link[soilprofile2]{line_mod} function. The corresponding Y values are created with the similar function \link[soilprofile2]{genY_fun}.
-#' @import tidyverse
-#' @import sf
+
 #' @export
 
 

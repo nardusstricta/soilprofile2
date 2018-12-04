@@ -1,4 +1,4 @@
-#' fill standard par 
+#' par_default 
 #'
 #' This function draws a set of randompolygons.
 #'
