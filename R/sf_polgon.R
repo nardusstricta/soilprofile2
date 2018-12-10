@@ -1,24 +1,66 @@
-#' sf polygon builder
+#' Convert dataframe to an simple features object
 #'
-#' merge coordinats with the input dataframe by name
+#' merge coordinats with the input data frame by name
+#' 
+#' @param df_geom A long table with the columns named "name", "x" and "y" (Id and coordinates) for each horizont. For example created by the \link[soilprofile2]{cord_setting} function 
+#' 
+#' @param df_attri The original table with all variables
 #'
-#' @param database The original table with all variables
-#' @param df_polygon A long table with the columns name, x coordinate and y coordinate for each horizont. Build by the function \link[soilprofile2]{cord_setting}
+#' @return This function returns an set of polygons as simple feature. Each polygon represents a horizon defined by the name
 #'
-#' @return This function returns an set of polygons as simple features. Each polygon represents a horizon defined by the name
-#'
-#'
+#' @examples 
+#' ##Example1
+#' 
+#' data_example <- data.frame(name = c(1, 2),
+#' from1 = c(0,20),
+#' to1 = c(20, 40)
+#' )
+#' 
+#' ##Coordination setting
+#' cord_example <- cord_setting(data_example, plot_width = 3)
+#' 
+#' ##Plot simple features
+#' plot(sf_polygon(df = cord_example)$geometry)
+#' 
+#' ##Example2
+#' 
+#' ##example data
+#' geom_example <- data.frame(name = c(1, 2),
+#' from1 = c(0,20),
+#' to1 = c(20, 40)
+#' ) %>% 
+#' cord_setting(plot_width = 3)
+#' attri_example <- data.frame(name = c(1, 2),
+#' rgb_col = c("#6F5F4CFF", "#947650FF"),
+#' nameC = c("Ah", "Bv")
+#' )
+#' 
+#' ##
+#' sf_example <- sf_polygon(df_geom = geom_example, df_attri = attri_example)
+#' 
+#' ##Plot with ggplot
+#' sf_example %>% 
+#' ggplot() +
+#' geom_sf(fill = sf_example$rgb_col) +
+#' geom_text(label = sf_example$nameC, x = c(10, 10), y = c(-10,-30)) +
+#' theme(axis.title.x=element_blank(),
+#' axis.text.x=element_blank(),
+#' axis.ticks.x=element_blank(),
+#' panel.background = element_blank())
 #' @export
-sf_polgon <- function(database, df_polygon){
-  #Erstellen von rechtwickligen Horizonten mit geraden Linien
-  shape_areas <- df_polygon %>%
-    st_as_sf(coords = c("x", "y")) %>%
-    group_by(name) %>%
-    summarise(do_union = F) %>%
-    st_cast("POLYGON") %>%
-    st_cast("MULTIPOLYGON") %>%
-    mutate(area = st_area(geometry)) %>% 
-    left_join(database, by = "name") %>% 
-    ungroup()
+sf_polygon <- function(df_geom, df_attri = NULL){
+  shape_areas <- df_geom %>%
+    sf::st_as_sf(coords = c("x", "y")) %>%
+    dplyr::group_by(name) %>%
+    dplyr::summarise(do_union = F) %>%
+    sf::st_cast("POLYGON") %>%
+    sf::st_cast("MULTIPOLYGON") %>%
+    dplyr::mutate(area = sf::st_area(geometry)) %>% 
+    dplyr::ungroup()
+  
+  if(!is.null(df_attri)){
+    shape_areas <- shape_areas %>% 
+      dplyr::left_join(df_attri, by = "name") 
+  }
   return(shape_areas)
 }

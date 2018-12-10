@@ -1,21 +1,58 @@
-#' creates a pattern with a given layer and function 
+#' Creates a pattern for a layer with a given function  
 #'
-#' For each horizon name there should be a function which creates a corresponding pattern. This function applies the pattern function and creates a new layer. This is smaller than the original layer due to a defined buffer. This is displayed using a line. 
+#' For each horizon name there should be a function which creates a corresponding pattern. This function applies the pattern function and creates a new layer. This new layer is smaller than the original layer due to a defined buffer.This is a helper function of the \link[soilprofile2]{apply_texture}. Here only pattern for one horizont is generated. With the \link[soilprofile2]{apply_texture} the whole profile will be created as a pattern. 
 #' 
-#' @param shape A sf tibble with a list fuction column and  a list geom column
-#' @param fun_horizont The Pattern function, i.e. the column from the "shape" file (könnte man sich vlt auch sparen)
-#' @param buffer A negetive numeric value that defines the distance to the outer boundary. The default is -0.5
+#' @param shape A Simple Features with one row (one geometry). At least with one geometry column and one "nameC" column (C for character)
+#' @param fun_horizont A function that creates a pattern for this specific horizon. 
+#' @param buffer Usually a negative value that indicates the distance between the pattern and the horizon boundary. 
+#' @return This function returns a new Simple Features which
+#'  contains all informations (columns) of the Input Simple Features (shape).
+#'  Columns with the graphic parameters are added. 
+#'  Adding patterns to the given layer can result in multiple geometries. (e.g. points and lines). 
+#'  To save this information, rows are added to the dataset
+#' @examples 
+#' ## Example data with one horizont (Ah)
+#' df_example <- data.frame(x = c(0, 20, 20, 0, 0), 
+#' y = c(0, 0, 20, 20,0), 
+#' nameC = rep("Ah", 5))
 #' 
-#' @return This function returns a new geometry of the sf-file
+#' ## Build an Simple Features
+#' shape_example <- df_example %>% 
+#' st_as_sf(coords = c("x", "y")) %>% 
+#' group_by(nameC) %>% 
+#' summarise(do_union = F) %>%
+#' st_cast("POLYGON") %>%
+#' st_cast("MULTIPOLYGON") 
+#' 
+#' ## example Function
+#' fun_example <- function(polygon){
+#' st_sample(polygon, size = 50) %>%
+#' st_union() %>% 
+#' st_sf(parID = 1)
+#' }
+#' 
+#' 
+#' ## Apply Function
+#' texture_example <- texture(shape = shape_example,
+#' fun_horizont = fun_example, 
+#' buffer = -1)
+#' 
+#' ##Plotting
+#' texture_example %>% 
+#' ggplot() + 
+#' geom_sf()
+#'  
 #' @export
 
-texture <- function(shape, fun_horizont, buffer = -1, ...){
+texture <- function(shape, fun_horizont, buffer, ...){
   
   pars <- shape$geometry
   
   inner_polygon <- st_buffer(pars, buffer) %>% 
     st_intersection(pars)
-  
+  if(length(inner_polygon) == 0){
+    stop("Your buffer is bigger than your horizon. This means there is no area where the pattern can be drawn. Try again with a smaller buffer!")
+  }
   out_line <- st_cast(pars, 'MULTILINESTRING', do_split = FALSE)
   
   

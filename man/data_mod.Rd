@@ -2,21 +2,31 @@
 % Please edit documentation in R/data_mod.R
 \name{data_mod}
 \alias{data_mod}
-\title{Add buffer properties to soil horizonts
-Funktion to modifide the transition of Soil horizon, by adding the Buffer- size, -number, and Shape of the Polygons, wich will be lay in the other horizont.}
+\title{Transforms the raw data (depth and color)}
 \usage{
 data_mod(df_org)
 }
 \arguments{
-\item{df.test}{Dataframe with horizts as row and properties as colum}
+\item{df_org}{dataframe with horizts as row and properties as column. At least the following columns should be in the dataframe (as.character):
+
+\enumerate{
+  \item The horizon name must be given in a column named "name"
+  \item The depth must be given in a column named "depth" in the following format: "0-20" This example shows a horizon extension from 0 cm to minus 20 cm.
+  \item The color must be specified in a column named "col" according to the system of Munsell.
+  e.g. 10YR 5/4 (Important is the blank between the Hue and value and the backslash between the value and the Chroma).
+}}
 }
 \value{
-new dataframe with add properities
+A data frame with the following additional columns:
+depth: ("from1", "to1"), "value_col", "chroma_col", "rgb_col" (calculated using the function \link[aqp]{munsell2rgb}, nameC (A new name column, the old one was replaced with an numeric id))
 }
 \description{
-Add buffer properties to soil horizonts
+This function transforms the raw profiledata. 
 Funktion to modifide the transition of Soil horizon, by adding the Buffer- size, -number, and Shape of the Polygons, wich will be lay in the other horizont.
 }
-\author{
-Gabriel Holz
+\examples{
+data_example <- data.frame(name = c("Ah", "Bv"),
+depth = c("0-22", "22-33.434"), 
+col = c("10YR 4/3", "5Y 5/3"))
+print(data_mod(data_example))
 }

@@ -2,13 +2,16 @@
 % Please edit documentation in R/data_load.R
 \name{data_load}
 \alias{data_load}
-\title{Funktion to load example Profils from}
+\title{Load example profildata}
 \usage{
 data_load(Profile = "SG2")
 }
-\description{
-Funktion to load example Profils from
+\arguments{
+\item{Profile}{The name of the Profile. One of the following names can be selected: "P1", "SG2", "SG5", "SG7"}
 }
-\author{
-Gabriel Holz
+\value{
+A dataframe
+}
+\description{
+The package contains example profile data which can be loaded with this function.
 }

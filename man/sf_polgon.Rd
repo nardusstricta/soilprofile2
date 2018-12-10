@@ -2,18 +2,52 @@
 % Please edit documentation in R/sf_polgon.R
 \name{sf_polgon}
 \alias{sf_polgon}
-\title{sf polygon builder}
+\title{Convert dataframe to an simple features object}
 \usage{
-sf_polgon(database, df_polygon)
+sf_polgon(df_geom, df_attri = NULL)
 }
 \arguments{
-\item{database}{The original table with all variables}
+\item{df_geom}{A long table with the columns named "name", "x" and "y" (Id and coordinates) for each horizont. For example created by the \link[soilprofile2]{cord_setting} function}
 
-\item{df_polygon}{A long table with the columns name, x coordinate and y coordinate for each horizont. Build by the function \link[soilprofile2]{cord_setting}}
+\item{df_attri}{The original table with all variables}
 }
 \value{
-This function returns an set of polygons as simple features. Each polygon represents a horizon defined by the name
+This function returns an set of polygons as simple feature. Each polygon represents a horizon defined by the name
 }
 \description{
-merge coordinats with the input dataframe by name
+merge coordinats with the input data frame by name
+}
+\examples{
+##Example1
+
+data_example <- data.frame(name = c(1, 2),
+from1 = c(0,20),
+to1 = c(20, 40)
+)
+
+##Coordination setting
+cord_example <- cord_setting(data_example, plot_width = 3)
+
+##Plot simple features
+plot(sf_polgon(df = cord_example)$geometry)
+
+##Example2
+geom_example <- data.frame(name = c(1, 2),
+from1 = c(0,20),
+to1 = c(20, 40)
+) \%>\% 
+cord_setting(plot_width = 3)
+attri_example <- data.frame(name = c(1, 2),
+rgb_col = c("#6F5F4CFF", "#947650FF"),
+nameC = c("Ah", "Bv")
+)
+sf_example <- sf_polgon(df_geom = geom_example, df_attri = attri_example)
+sf_example \%>\% 
+ggplot() +
+geom_sf(fill = sf_example$rgb_col) +
+geom_text(label = sf_example$nameC, x = c(10, 10), y = c(-10,-30)) +
+theme(axis.title.x=element_blank(),
+axis.text.x=element_blank(),
+axis.ticks.x=element_blank(),
+panel.background = element_blank())
 }

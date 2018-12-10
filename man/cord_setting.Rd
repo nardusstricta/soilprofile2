@@ -2,19 +2,29 @@
 % Please edit documentation in R/cord_setting.R
 \name{cord_setting}
 \alias{cord_setting}
-\title{"Coordinate creator"}
+\title{setting coordinates}
 \usage{
-cord_setting(database = df, plot_width = 3)
+cord_setting(df, plot_width = 3)
 }
 \arguments{
-\item{database}{A dataframe, which was build by the function \link[soilprofile2]{data_mod}}
+\item{df}{A dataframe, which was normaly build by the function \link[soilprofile2]{data_mod}. The rows represent the horizons and the columns the properties.
+The data frame should contain at least one column with an id ("name"). One column with the mininal depth ("from1") and one with the maximum depth ("to1")}
 
-\item{plot_width}{A numeric value that determines the relative width of the  representation.}
+\item{plot_width}{A numeric value that sets the relative width of the plot. The default is 3}
 }
 \value{
 This function returns a dataframe with four coordinates for each horizon. Additionally a column with the ID, which can be joind to the source data
 }
 \description{
-This is a simple function that, build coordinates for each horizont. So 
-With this you can easily build sf files
+This function sets four coordinates (x and y) for each horizon. This makes it easy to calculate a polygon. e.g. as Simple Features
+}
+\examples{
+data_example <- data.frame(name = c(1, 2),
+from1 = c(0,20),
+to1 = c(20, 40)
+)
+
+cord_example <- cord_setting(data_example, plot_width = 3)
+print(cord_example)
+
 }
