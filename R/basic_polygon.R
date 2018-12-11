@@ -9,9 +9,9 @@
 #' @export
 
 basic_polygon <- function(polygon, cellsize, square = F){
-  st_make_grid(polygon, what = "polygons", cellsize = cellsize,  square = square) %>% 
-    st_union()%>% 
-    st_sf(parID = 1)
+  sf::st_make_grid(polygon, what = "polygons", cellsize = cellsize,  square = square) %>% 
+    sf::st_union()%>% 
+    sf::st_sf(parID = 1)
 }
 
   

@@ -30,6 +30,9 @@
 #'  Adding patterns to the given layer can result in multiple geometries.  (e.g. points and lines). 
 #'  To save this information, rows are added to the dataset.  
 #' @examples 
+#' 
+#' library(dplyr)
+#' library(sf)
 #' ## Example data with two horizont (Ah + Bv)
 #' df_example <- data.frame(x = c(0, 20, 20, 0, 0), 
 #' y = c(0, 0, 20, 20,0),
@@ -43,16 +46,17 @@
 #' shape_example <- df_example %>%
 #' st_as_sf(coords = c("x", "y")) %>% 
 #' group_by(nameC) %>%
-#' summarise(do_union = F) %>%
+#' summarise(do_union = FALSE) %>%
 #' st_cast("POLYGON") %>%
 #' st_cast("MULTIPOLYGON")
-#' 
+#' \dontrun{
 #' ## Creation of the patterns
 #' texture_example <- apply_texture(shape = shape_example, buffer = -1.3) 
 #' 
 #' ## Plotting Data
+#' library(ggplot2)
 #' texture_example %>% ggplot() + geom_sf()
-#' 
+#' }
 #' @export
 #' @author Gabriel Holz
 
@@ -60,7 +64,7 @@
 apply_texture <- function(shape, buffer = -1){
 
   texture_sf <- shape %>% 
-    dplyr::left_join(soilprofile2::fun_list, by = "nameC") %>% 
+    dplyr::left_join(fun_list, by = "nameC") %>% 
     dplyr::mutate(fun = ifelse(fun == "NULL", c(soilprofile2::build_random_pattern), fun)) 
 
   temp_geom <- sf::st_sf(par_ID = 0,
@@ -82,7 +86,7 @@ apply_texture <- function(shape, buffer = -1){
   #add graphic pars:
   ##
   erg <- temp_geom %>% 
-    dplyr::left_join(soilprofile2::df_par_wide, 
+    dplyr::left_join(df_par_wide, 
                      by = c("nameC", "par_ID")) 
   
   return(erg)

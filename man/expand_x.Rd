@@ -4,7 +4,7 @@
 \alias{expand_x}
 \title{new X-values}
 \usage{
-This function is used internally by the \link[soilprofile2]{line_mod} function.
+This function is used internally by the \link[soilprofile2]{line_mod} function
 }
 \arguments{
 \item{numberX}{A numeric vector that giving the number of points which should be added to the horizont line}

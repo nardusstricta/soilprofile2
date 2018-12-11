@@ -42,7 +42,7 @@ build_random_pattern <- function(polygon, ...){
   index <- sample(length(random_par), 1)
   layer1 <- random_par[[index]](polygon = polygon)
   
-  erg_sf <- st_sf(par_ID = 1, geometry = st_geometry(layer1)) 
+  erg_sf <- sf::st_sf(par_ID = 1, geometry = st_geometry(layer1)) 
   par_ID <- 1
   size <- rnorm(1, mean = 1, sd = 1)
   #number_char <- nameC
@@ -60,22 +60,22 @@ build_random_pattern <- function(polygon, ...){
                                        sm = sm
     )
     erg_sf <- rbind(erg_sf,
-                    st_sf(par_ID = par_ID,
-                          geometry = st_geometry(layer_temp)
+                    sf::st_sf(par_ID = par_ID,
+                          geometry = sf::st_geometry(layer_temp)
                     )
     )
     
     par_ID <- par_ID + 1
     
     index <- sample(length(random_par), 1)
-    polygon <- st_geometry(erg_sf[length(erg_sf$geometry),])
+    polygon <- sf::st_geometry(erg_sf[length(erg_sf$geometry),])
     
     geom <- random_par[[index]](polygon = polygon) %>% 
-      st_intersection(polygon)
+      sf::st_intersection(polygon)
     
     erg_sf <- rbind(erg_sf,
-                    st_sf(par_ID = par_ID,
-                          geometry = st_geometry(geom)
+                    sf::st_sf(par_ID = par_ID,
+                          geometry = sf::st_geometry(geom)
                     )
     )
     

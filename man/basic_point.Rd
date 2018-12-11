@@ -4,7 +4,7 @@
 \alias{basic_point}
 \title{basic point}
 \usage{
-basic_point(polygon, cellsize = 12, random = F)
+basic_point(polygon, cellsize = 12, random = FALSE)
 }
 \arguments{
 \item{polygon}{A polygon-layer, which has been build by the \link[soilprofile2]{texture} function.}

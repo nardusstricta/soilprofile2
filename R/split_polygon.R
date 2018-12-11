@@ -10,7 +10,7 @@
 #' 
 #' @return A new simple feature with one line for each horizont and the columns for the atttributes. 
 #' @examples 
-#' library(tidyverse)
+#' library(dplyr)
 #'## Example data
 #'data_example <- data.frame(name = c(1, 2),
 #'                           from1 = c(0,20),
@@ -27,7 +27,7 @@
 #'  lattri_example <- data.frame(name= unique(cord_example$name),
 #'                               numberX = c(2, 10),
 #'                               sd = c(1,1),
-#'                               sm = c(T, T)
+#'                               sm = c(TRUE, TRUE)
 #'  )
 #'  
 #'  ## Apply the line_mod fuction
@@ -42,6 +42,7 @@
 #'    ), by = "name")
 #'  
 #'  ## Plot simple feature geometry
+#'  library(ggplot2)
 #'  example_profile %>%
 #'    ggplot() +
 #'    geom_sf(fill = example_profile$rgb_col) +

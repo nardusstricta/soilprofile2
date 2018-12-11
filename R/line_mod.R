@@ -32,7 +32,7 @@
 #'lattri_example <- data.frame(name= unique(cord_example$name),
 #'                             numberX = c(2, 10), 
 #'                             sd = c(1,1),
-#'                             sm = c(T, T)
+#'                             sm = c(TRUE, TRUE)
 #')
 #'
 #'## Apply the line_mod fuction
@@ -57,7 +57,7 @@ line_mod <- function(df_geom, line_attri, seed = 33){
                                         name = line_attri$name)) %>% 
     dplyr::left_join(tempX, by = "name") %>% 
     dplyr::group_by(name) %>% 
-    dplyr::mutate(x = sample(seq(min(x),max(x), .1), n(), replace = T)) %>% 
+    dplyr::mutate(x = sample(seq(min(x),max(x), .1), n(), replace = TRUE)) %>% 
     dplyr::mutate(y = rnorm(n(), mean = max(y), sd = sd)) %>% 
     dplyr::union_all(tempX) %>% 
     dplyr::arrange(x) %>% 
@@ -68,7 +68,7 @@ line_mod <- function(df_geom, line_attri, seed = 33){
   sf_line <- new_df_geom %>% 
     sf::st_as_sf(coords = c("x", "y")) %>%
     dplyr::group_by(name, sm) %>%
-    dplyr::summarise(do_union = F) %>% 
+    dplyr::summarise(do_union = FALSE) %>% 
     sf::st_cast("LINESTRING") %>% 
     dplyr::mutate(sm = sm)
   

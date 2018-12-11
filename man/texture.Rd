@@ -25,6 +25,8 @@ For each horizon name there should be a function which creates a corresponding p
 }
 \examples{
 ## Example data with one horizont (Ah)
+library(dplyr)
+library(sf)
 df_example <- data.frame(x = c(0, 20, 20, 0, 0), 
 y = c(0, 0, 20, 20,0), 
 nameC = rep("Ah", 5))
@@ -33,7 +35,7 @@ nameC = rep("Ah", 5))
 shape_example <- df_example \%>\% 
 st_as_sf(coords = c("x", "y")) \%>\% 
 group_by(nameC) \%>\% 
-summarise(do_union = F) \%>\%
+summarise(do_union = FALSE) \%>\%
 st_cast("POLYGON") \%>\%
 st_cast("MULTIPOLYGON") 
 
@@ -51,6 +53,8 @@ fun_horizont = fun_example,
 buffer = -1)
 
 ##Plotting
+library(ggplot2)
+
 texture_example \%>\% 
 ggplot() + 
 geom_sf()

@@ -42,7 +42,7 @@ cord_example <- cord_setting(data_example, plot_width = 3)
 lattri_example <- data.frame(name= unique(cord_example$name),
                             numberX = c(2, 10), 
                             sd = c(1,1),
-                            sm = c(T, T)
+                            sm = c(TRUE, TRUE)
 )
 
 ## Apply the line_mod fuction

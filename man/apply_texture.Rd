@@ -41,6 +41,9 @@ A list of functions is stored in the package.
  will be used the \link[soilprofile2]{build_random_pattern} function
 }
 \examples{
+
+library(dplyr)
+library(sf)
 ## Example data with two horizont (Ah + Bv)
 df_example <- data.frame(x = c(0, 20, 20, 0, 0), 
 y = c(0, 0, 20, 20,0),
@@ -54,16 +57,17 @@ nameC = rep("Bv", 5))
 shape_example <- df_example \%>\%
 st_as_sf(coords = c("x", "y")) \%>\% 
 group_by(nameC) \%>\%
-summarise(do_union = F) \%>\%
+summarise(do_union = FALSE) \%>\%
 st_cast("POLYGON") \%>\%
 st_cast("MULTIPOLYGON")
-
+\dontrun{
 ## Creation of the patterns
 texture_example <- apply_texture(shape = shape_example, buffer = -1.3) 
 
 ## Plotting Data
+library(ggplot2)
 texture_example \%>\% ggplot() + geom_sf()
-
+}
 }
 \author{
 Gabriel Holz

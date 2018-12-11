@@ -8,15 +8,15 @@
 #'
 #' @export
 
-basic_point <- function(polygon, cellsize = 12, random = F){
+basic_point <- function(polygon, cellsize = 12, random = FALSE){
   if(random == T){
-    st_sample(polygon, size = cellsize) %>% 
-      st_union() %>% 
-      st_sf(parID = 1) #geometry colum named "."
+    sf::st_sample(polygon, size = cellsize) %>% 
+      sf::st_union() %>% 
+      sf::st_sf(parID = 1) #geometry colum named "."
   }else{
-    st_make_grid(polygon, cellsize = cellsize,  what = "centers", square = T) %>% 
-      st_union() %>% 
-      st_sf(parID = 1) 
+    sf::st_make_grid(polygon, cellsize = cellsize,  what = "centers", square = TRUE) %>% 
+      sf::st_union() %>% 
+      sf::st_sf(parID = 1) 
   }
   
 }

@@ -43,9 +43,9 @@ convex_poly <- function(nSides, area, xstart, ystart){
   points$y <- points$y * sqrt(area/current.area)
   p <- data.frame(x = points$x, y= points$y)
   poo <- rbind(p, p[1,])
-  po2 <- st_linestring(as.matrix(poo)) %>% 
-    st_cast('MULTIPOINT') %>% 
-    st_cast("POLYGON")
+  po2 <- sf::st_linestring(as.matrix(poo)) %>% 
+    sf::st_cast('MULTIPOINT') %>% 
+    sf::st_cast("POLYGON")
   
   return(po2)
   

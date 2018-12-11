@@ -19,7 +19,7 @@ merge coordinats with the input data frame by name
 }
 \examples{
 ##Example1
-
+library(dplyr)
 data_example <- data.frame(name = c(1, 2),
 from1 = c(0,20),
 to1 = c(20, 40)
@@ -29,7 +29,7 @@ to1 = c(20, 40)
 cord_example <- cord_setting(data_example, plot_width = 3)
 
 ##Plot simple features
-plot(sf_polygon(df = cord_example)$geometry)
+plot(sf_polygon(df_geom = cord_example)$geometry)
 
 ##Example2
 
@@ -48,6 +48,7 @@ nameC = c("Ah", "Bv")
 sf_example <- sf_polygon(df_geom = geom_example, df_attri = attri_example)
 
 ##Plot with ggplot
+library(ggplot2)
 sf_example \%>\% 
 ggplot() +
 geom_sf(fill = sf_example$rgb_col) +

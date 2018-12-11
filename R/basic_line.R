@@ -10,7 +10,7 @@
 #' @export
 
 basic_line <- function(polygon, cellnumber = 22, rotation = 12){
-  x <- st_bbox(polygon)[c("xmin", "xmax")]
+  x <- sf::st_bbox(polygon)[c("xmin", "xmax")]
   x["xmin"] <- x["xmin"] - rotation
   x["xmax"] <- x["xmax"] + rotation 
   x <- rep(rep(seq(x[1], x[2],
@@ -24,13 +24,13 @@ basic_line <- function(polygon, cellnumber = 22, rotation = 12){
   )
   
   line_sf <- df %>% 
-    st_as_sf(coords = c("x", "y")) %>%
-    group_by(id) %>%
-    summarise(do_union = F) %>% 
-    st_cast("LINESTRING") %>% 
-    st_cast("MULTILINESTRING") %>% 
-    st_union() %>% 
-    st_sf(parID = 1)
+    sf::st_as_sf(coords = c("x", "y")) %>%
+    dplyr::group_by(id) %>%
+    dplyr::summarise(do_union = F) %>% 
+    sf::st_cast("LINESTRING") %>% 
+    sf::st_cast("MULTILINESTRING") %>% 
+    sf::st_union() %>% 
+    sf::st_sf(parID = 1)
   return(line_sf)
   
 }

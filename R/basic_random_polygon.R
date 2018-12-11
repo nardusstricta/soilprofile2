@@ -13,11 +13,11 @@
 #' @export
 
 basic_random_polygon <- function(polygon, size, number, nSides, sm = T){
-  area <- st_area(polygon) * size/number
-  point_samp <- st_sample(polygon, number)
+  area <- sf::st_area(polygon) * size/number
+  point_samp <- sf::st_sample(polygon, number)
   
   var <-  point_samp %>% 
-    st_coordinates() %>% 
+    sf::st_coordinates() %>% 
     as.data.frame()
   
   
@@ -29,15 +29,15 @@ basic_random_polygon <- function(polygon, size, number, nSides, sm = T){
   }
   
   erg <- point_samp %>% 
-    st_sf(parID = 1) %>% 
-    summarise(do_union = F) %>%
-    st_buffer(0.0)  %>% 
-    st_intersection(polygon) %>% 
-    st_union() 
+    sf::st_sf(parID = 1) %>% 
+    dplyr::summarise(do_union = F) %>%
+    sf::st_buffer(0.0)  %>% 
+    sf::st_intersection(polygon) %>% 
+    sf::st_union() 
   
   
   if(sm == T){
-    erg  <-  smooth(erg, method = "ksmooth")
+    erg  <-  smoothr::smooth(erg, method = "ksmooth")
   }
   
   return(erg)
