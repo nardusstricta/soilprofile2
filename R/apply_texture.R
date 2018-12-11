@@ -60,8 +60,8 @@
 apply_texture <- function(shape, buffer = -1){
 
   texture_sf <- shape %>% 
-    dplyr::left_join(fun_list, by = "nameC") %>% 
-    dplyr::mutate(fun = ifelse(fun == "NULL", c(build_random_pattern), fun)) 
+    dplyr::left_join(soilprofile2::fun_list, by = "nameC") %>% 
+    dplyr::mutate(fun = ifelse(fun == "NULL", c(soilprofile2::build_random_pattern), fun)) 
 
   temp_geom <- sf::st_sf(par_ID = 0,
                          nameC = "empty",
@@ -82,7 +82,8 @@ apply_texture <- function(shape, buffer = -1){
   #add graphic pars:
   ##
   erg <- temp_geom %>% 
-    dplyr::left_join(df_par_wide, by = c("nameC", "par_ID")) 
+    dplyr::left_join(soilprofile2::df_par_wide, 
+                     by = c("nameC", "par_ID")) 
   
   return(erg)
 }

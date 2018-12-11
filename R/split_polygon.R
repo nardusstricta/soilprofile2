@@ -41,7 +41,7 @@
 #'                         rgb_col = c("#6F5F4CFF", "#947650FF")
 #'    ), by = "name")
 #'  
-#'  ## Plot simple feature geometrysf_example %>%
+#'  ## Plot simple feature geometry
 #'  example_profile %>%
 #'    ggplot() +
 #'    geom_sf(fill = example_profile$rgb_col) +

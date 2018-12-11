@@ -6,8 +6,8 @@
 #' @param name the name of horizonts
 #'
 #' @return This function returns a numeric id vector. 
-#' @usage This function is used internally by the \link[soilprofile2]{line_mod} function.
-#' @export
+#' @usage This function is used internally by the \link[soilprofile2]{line_mod} function
+#' 
 
 expand_x <- function(numberX, name){
   exp_x <- NULL
