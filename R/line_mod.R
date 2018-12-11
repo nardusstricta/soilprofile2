@@ -1,48 +1,78 @@
-#' creates a sf line 
+#' creates a line as simple feature
 #'
-#' This is a simple function that creates from the horizont coordinates a sf line. 
-#' In zukunft müssen die Parameter für die Form der Linie hier einstellbar sein
+#' This is a simple function that creates a simple feature line from the horizont coordinates. 
 #' 
-#' @param df_polygon A character string giving the text the function will print
-#' @param mat_line A character string giving the text the function will print
-#' @param sm A character string giving the text the function will print
+#' @param df_geom_geom A long table with the columns named "name", "x" and "y" (Id and coordinates) for each horizont. For example created by the \link[soilprofile2]{cord_setting} function 
+#' @param line_attri A datan frame with the information about the lines which divide the horizons. 
+#' The following columns must exist:
+#' \enumerate{
+#'   \item The horizon Id must be given in a numeric column named "name"
+#'   \item The number of X points, which should deviate the line from a straight line, must be given in a numeric column named: "numberX"
+#'   \item The distance between the X points and the straight line must be given in a numeric column named: "sd". 
+#'   The values are calculated using the \link[base]{rnorm} function. The mean value is given by the X-value of the straight horizon line. And the standard deviation can be selected individually. 
+#'   \item The column named "sm" can be used as a logical value to specify whether the horizon transition should be smoothed. This is done with the function \link[smoothr]{smooth}.
+#' } 
+#' @param seed For replicable examples a seed can be set here 
 #' 
 #'
-#' @return This function returns a sf-file, which one line for each horizont
+#' @return This function returns a linestring simple feature. Each line represents the upper horizontal limit of the corresponding id.
+#' 
+#' @examples 
+#' 
+#' ## Example data
+#' data_example <- data.frame(name = c(1, 2),
+#'                           from1 = c(0,20),
+#'                           to1 = c(20, 40)
+#')
+#'
+#'##Coordination setting
+#'cord_example <- cord_setting(data_example, plot_width = 3)
+#'
+#'## Line attributes data frame:
+#'lattri_example <- data.frame(name= unique(cord_example$name),
+#'                             numberX = c(2, 10), 
+#'                             sd = c(1,1),
+#'                             sm = c(T, T)
+#')
+#'
+#'## Apply the line_mod fuction
+#'line_example <- line_mod(df = cord_example, line_attri = lattri_example)
+#'
+#'## Plot simple feature geometry
+#'plot(line_example$geometry)
 #'
 #' @export
 
-line_mod <- function(df_polygon, mat_line, sm = T, seed = 33){
-  tempX <- df_polygon %>% 
-    group_by(name) %>% 
-    filter(y == max(y)) %>% 
-    select(x, y, name) %>% 
-    left_join(mat_line, by = "name") %>% 
-    ungroup()
+line_mod <- function(df_geom, line_attri, seed = 33){
+  tempX <- df_geom %>% 
+    dplyr::group_by(name) %>% 
+    dplyr::filter(y == max(y)) %>% 
+    dplyr::left_join(line_attri, by = "name") %>% 
+    dplyr::ungroup()
   
-  #generate new X values, depends of mat_line number X for each group
+  #generate new X values, depends of line_attri number X for each group
   set.seed(seed)
 
-  new.df  <- data.frame(name = expand_x(numberX = mat_line$numberX, name = mat_line$name)) %>% 
-    left_join(tempX, by = "name") %>% 
-    group_by(name) %>% 
-    mutate(x = sample(seq(min(x),max(x), .1), n(), replace = T)) %>% 
-    mutate(y = rnorm(n(), mean = max(y), sd = sd)) %>% 
-    union_all(tempX) %>% 
-    arrange(x) %>% 
-    dplyr::select(x, y, name) 
+  new_df_geom  <- data.frame(name = expand_x(numberX = line_attri$numberX,
+                                        name = line_attri$name)) %>% 
+    dplyr::left_join(tempX, by = "name") %>% 
+    dplyr::group_by(name) %>% 
+    dplyr::mutate(x = sample(seq(min(x),max(x), .1), n(), replace = T)) %>% 
+    dplyr::mutate(y = rnorm(n(), mean = max(y), sd = sd)) %>% 
+    dplyr::union_all(tempX) %>% 
+    dplyr::arrange(x) %>% 
+    dplyr::select(x, y, name, sm) 
 
   
   #newdatat Line:
-  df_line <- new.df %>% 
-    st_as_sf(coords = c("x", "y")) %>%
-    group_by(name) %>%
-    summarise(do_union = F) %>% 
-    st_cast("LINESTRING") 
+  sf_line <- new_df_geom %>% 
+    sf::st_as_sf(coords = c("x", "y")) %>%
+    dplyr::group_by(name, sm) %>%
+    dplyr::summarise(do_union = F) %>% 
+    sf::st_cast("LINESTRING") %>% 
+    dplyr::mutate(sm = sm)
   
-  if(sm == T) {
-      df_line <- smooth(df_line, method = "ksmooth")
-    }
+  sf_line[which(sf_line$sm == T),] <- smoothr::smooth(sf_line[which(sf_line$sm == T),], method = "ksmooth")
   
-  return(df_line)
+  return(sf_line)
 }

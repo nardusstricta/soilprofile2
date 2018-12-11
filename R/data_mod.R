@@ -21,6 +21,7 @@
 #' @importFrom tidyr separate gather
 #' @importFrom aqp munsell2rgb
 #' @importFrom magrittr "%>%"
+#' @importFrom lwgeom st_split
 
 
 data_mod <- function(df_org){

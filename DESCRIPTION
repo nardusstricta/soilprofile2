@@ -22,4 +22,5 @@ Imports:
     smoothr,
     aqp,
     magrittr,
-    tidyr
+    tidyr,
+    lwgeom 
