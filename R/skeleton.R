@@ -12,66 +12,68 @@
 #' @export
 
 
-skeleton <- function(shape_mod, point_shape = c(0,0,4,15,33), jitter = F, union = T, smooth= T){
+skeleton <- function(shape_mod, skeleton_mat){
 shape_s  <- shape_mod %>%
-  select(name, skel_ab, skel_dim, area) %>%
-  mutate(point_shape = point_shape) %>%
-  na.omit()  %>%
-  mutate(area_comp = area * skel_ab) %>%
-  mutate(skel_number = 100 - skel_dim/sum(skel_dim)*100)
- 
+  select(name, skel_ab, skel_dim_from, skel_dim_to, area) %>%
+  group_by(name) %>% 
+  mutate(area_comp = area * skel_ab) %>% #absoluter Skelettanteil
+  mutate(skel_dim_mean = mean(c(skel_dim_from, skel_dim_to), rm.na = T)) %>%
+  mutate(skel_number = area_comp/(skel_dim_mean * skel_dim_mean))  %>%
+  #Die
+  #Anzahl der Steine hängt von den Korngroße ab. D.h. je kleiner die Korngröße
+  #ist desto mehr Steine habe ich. Dies ist abhängig von allen angegeben Korngroßen.
+  replace_na(list(skel_number = 0))  %>% 
+  left_join(skeleton_mat, by = "name") %>% 
+  ungroup()
 
-  sammple_point <- st_sample(shape_s, round(shape_s$skel_number/2))
-  spoint <-  st_intersection(shape_s,  sammple_point) %>% 
+for(i in which(shape_s$strat == T)){
+  shape_s$geometry[i] <-
+    basic_line(shape_s$geometry[i], 
+               cellnumber = shape_s$cellnumber[i],
+               rotation = shape_s$rotation[i]) %>% 
+    st_sample(round(shape_s$skel_number[i])) %>% 
+    st_union()
+}
+  
+for(i in which(shape_s$strat == F & shape_s$skel_number != 0)){
+    shape_s$geometry[i] <- st_sample(shape_s$geometry[i], 
+                                     shape_s$skel_number[i]) %>% 
+      st_union()
+    
+}
+  
+  spoint <-  st_intersection(shape_s,  shape_mod$geometry) %>% 
+    st_collection_extract(type = "POINT") %>%  
+    st_cast("POINT") %>% 
     group_by(name) %>% 
-    mutate(random_part = rgamma(n(),5, 1)) %>% 
+    mutate(random_part = runif(n(), min = skel_dim_from, max = skel_dim_to)) %>% 
     mutate(random_part = random_part/sum(random_part)) %>% 
     mutate(area_size = area_comp * random_part) %>% 
     ungroup()
-  
 
   xy_cord <- spoint %>%  #Koordinaten für die Funktion extrahieren:
-    st_coordinates()
- 
- 
+    st_coordinates() 
+
   xy_cord <- as.data.frame(xy_cord)
+  #spoint3 <- left_join(spoint2, xy_cord, by = c("name"="L1"))
+
+  spoint4 <- spoint %>% 
+    dplyr::bind_cols(xy_cord)
+  
   for(i in 1 : nrow(xy_cord)){
-    st_geometry(spoint)[i] <- convex_poly(nSides = spoint$point_shape[i],
-                                         area = spoint$area_size[i], 
-                                         xstart = xy_cord$X[i], 
-                                         ystart = xy_cord$Y[i])
+    st_geometry(spoint4)[i] <- convex_poly(data_skel = spoint4[i,])
   }
   
-  spoint_clean <-  spoint %>%
-    select(name, geometry) %>%
-    st_buffer(0.0) %>% 
-    st_intersection(shape_mod) %>% 
-    ungroup()
-  
-  if(smooth == T){
-    spoint_clean <- smooth(spoint_clean, method = "ksmooth")
-  }
+  spoint_clean <-  spoint4 %>%
+    st_intersection(shape_mod$geometry)
 
+   spoint_clean[which(spoint_clean$smooth == T),] <- 
+     smooth(spoint_clean[which(spoint_clean$smooth == T),], method = "ksmooth")
+   
+   spoint_clean1 <- c(st_union(spoint_clean[which(spoint_clean$union == T),]),
+                      spoint_clean$geometry[which(!spoint_clean$union == T)])
+   
   
-  
-
-  
-  if(jitter == T){
-    jitter <- spoint_clean %>% 
-      st_jitter(factor = 0.1) %>% 
-      st_intersection(shape_mod)
-    return(jitter)
-  }
-  
-  if(union == T){
-    spoint_clean <-  spoint_clean %>%
-      group_by(name) %>% 
-      summarise(do_union = F) %>%
-      st_buffer(0.0) %>% 
-     # st_union(shape_mod) %>% 
-      ungroup()
-    return(spoint_clean)
-  }
-  return(spoint_clean)
+  return(spoint_clean1)
 }
 

@@ -4,7 +4,7 @@
 \alias{convex_poly}
 \title{Helper function from \link[soilprofile2]{smoth_trans}}
 \usage{
-convex_poly(nSides, area, xstart, ystart)
+convex_poly(data_skel)
 }
 \arguments{
 \item{nSides}{The number of Sides}

@@ -18,7 +18,7 @@ data_mod(df_org)
 }
 \value{
 A data frame with the following additional columns:
-depth: ("from1", "to1"), "value_col", "chroma_col", "rgb_col" (calculated using the function \link[aqp]{munsell2rgb}, nameC (A new name column, the old one was replaced with an numeric id))
+depth: ("from1", "to1"), "value_col", "chroma_col", "rgb_col" (calculated using the function \link[aqp]{munsell2rgb}, nameC (A new name column, the old one was replaced with an numeric id). skel_dim_from and skel_dim_to (seperate the skel dimension column))
 }
 \description{
 This function transforms the raw profiledata. 

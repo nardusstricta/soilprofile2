@@ -11,7 +11,7 @@
 #'   e.g. 10YR 5/4 (Important is the blank between the Hue and value and the backslash between the value and the Chroma).
 #' }
 #' @return A data frame with the following additional columns:
-#' depth: ("from1", "to1"), "value_col", "chroma_col", "rgb_col" (calculated using the function \link[aqp]{munsell2rgb}, nameC (A new name column, the old one was replaced with an numeric id))
+#' depth: ("from1", "to1"), "value_col", "chroma_col", "rgb_col" (calculated using the function \link[aqp]{munsell2rgb}, nameC (A new name column, the old one was replaced with an numeric id). skel_dim_from and skel_dim_to (seperate the skel dimension column))
 #' @examples 
 #' data_example <- data.frame(name = c("Ah", "Bv"),
 #' depth = c("0-22", "22-33.434"), 
@@ -31,6 +31,7 @@ data_mod <- function(df_org){
     dplyr::mutate(name = 1:nrow(df_org)) %>%
     dplyr::mutate(from1 = as.numeric(from1)) %>% 
     dplyr::mutate(to1 = as.numeric(to1)) %>%
+    tidyr::separate(skel_dim, c("skel_dim_from", "skel_dim_to"), "-", convert = T) %>% 
     tidyr::separate(col, c("hue_col", "temp"), " ") %>% 
     tidyr::separate(temp, c("value_col", "chroma_col"), "/") %>% 
     dplyr::mutate(value_col = as.numeric(value_col)) %>% 
