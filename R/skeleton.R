@@ -69,13 +69,17 @@ for(i in which(shape_s$strat == F & shape_s$skel_number != 0)){
 
    spoint_clean[which(spoint_clean$smooth == T),] <- 
      smooth(spoint_clean[which(spoint_clean$smooth == T),], method = "ksmooth")
-   
-   
-   test <- st_union(spoint_clean[which(spoint_clean$union == T),])
-   test2 <- spoint_clean$geometry[which(spoint_clean$union == F)]
-   spoint_clean1 <- c(test, test2)
+test22 <-    spoint_clean %>% 
+  select(name, union, geometry) %>% 
+  filter(union == TRUE) %>% 
+  group_by(name) %>% 
+  summarise()
+test44 <- spoint_clean %>%
+  filter(union == FALSE) %>% 
+  select(name) 
+erg <- rbind(test22, test44)
 
-  return(spoint_clean1)
+  return(erg)
 }
 
 
