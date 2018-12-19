@@ -22,12 +22,12 @@ basic_random_polygon <- function(polygon, size, number, nSides, sm = T){
   par_df <- data.frame(
     nSides = nSides,
     area = area, 
-    xstart = var$X[i], 
-    ystart = var$Y[i]
+    xstart = var$X, 
+    ystart = var$Y
   )
   
   for(i in 1 : nrow(var)){
-    point_samp[i] <- convex_poly(par_df)
+    point_samp[i] <- convex_poly(par_df[i,])
   }
   
   erg <- point_samp %>% 
