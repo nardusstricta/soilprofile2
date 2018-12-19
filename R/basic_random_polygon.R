@@ -19,13 +19,15 @@ basic_random_polygon <- function(polygon, size, number, nSides, sm = T){
   var <-  point_samp %>% 
     sf::st_coordinates() %>% 
     as.data.frame()
-  
+  par_df <- data.frame(
+    nSides = nSides,
+    area = area, 
+    xstart = var$X[i], 
+    ystart = var$Y[i]
+  )
   
   for(i in 1 : nrow(var)){
-    point_samp[i] <- convex_poly(nSides = nSides,
-                                 area = area, 
-                                 xstart = var$X[i], 
-                                 ystart = var$Y[i])
+    point_samp[i] <- convex_poly(par_df)
   }
   
   erg <- point_samp %>% 
