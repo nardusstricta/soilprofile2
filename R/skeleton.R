@@ -70,10 +70,12 @@ for(i in which(shape_s$strat == F & shape_s$skel_number != 0)){
    spoint_clean[which(spoint_clean$smooth == T),] <- 
      smooth(spoint_clean[which(spoint_clean$smooth == T),], method = "ksmooth")
    
-   spoint_clean1 <- c(st_union(spoint_clean[which(spoint_clean$union == T),]),
-                      spoint_clean$geometry[which(!spoint_clean$union == T)])
    
-  
+   test <- st_union(spoint_clean[which(spoint_clean$union == T),])
+   test2 <- spoint_clean$geometry[which(spoint_clean$union == F)]
+   spoint_clean1 <- c(test, test2)
+
   return(spoint_clean1)
 }
+
 
