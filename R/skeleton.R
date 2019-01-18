@@ -2,84 +2,97 @@
 #'
 #' generates new layer for the soil skeleton
 #'
-#' @param shape_mod A numeric vector that giving the start and end of the horizont line
-#' @param point_shape Logical value specifying whether to include an exclamation
-#'    point after the text
+#' @param shape_mod A simple feature class object with the base geometry. At least the following column names must be present in the attributes: name (horizont id), skel_ab (abundanz), skel_dim_from (dimension from), skel_dim_to (dimension to), area (area). 
+#' 
+#' @param skeleton_mat A data frame with the following parameters (as column names) for specifying the rock form:  "name", "nSides", "smooth", "union", "phi", "strat", "cellnumber", "rotation"
 #'
-#' @return This function returns 12 X-value. 10 of this are new generatet by the \link[base]{runif}  Funktion 
-#' @usage This function is used internally by the \link[soilprofile2]{line_mod} function. The corresponding Y values are created with the similar function \link[soilprofile2]{genY_fun}.
+#' @return This function returns 12 X-value. 10 of this are new generatet by the \link[base]{runif}  Funktion. If a parameter is unknown set 0 or NA in the cell.  
+#' @usage 
 
 #' @export
 
 
 skeleton <- function(shape_mod, skeleton_mat){
-shape_s  <- shape_mod %>%
-  select(name, skel_ab, skel_dim_from, skel_dim_to, area) %>%
-  group_by(name) %>% 
-  mutate(area_comp = area * skel_ab) %>% #absoluter Skelettanteil
-  mutate(skel_dim_mean = mean(c(skel_dim_from, skel_dim_to), rm.na = T)) %>%
-  mutate(skel_number = area_comp/(skel_dim_mean * skel_dim_mean))  %>%
-  #Die
-  #Anzahl der Steine hängt von den Korngroße ab. D.h. je kleiner die Korngröße
-  #ist desto mehr Steine habe ich. Dies ist abhängig von allen angegeben Korngroßen.
-  replace_na(list(skel_number = 0))  %>% 
-  left_join(skeleton_mat, by = "name") %>% 
-  ungroup()
-
-for(i in which(shape_s$strat == T)){
-  shape_s$geometry[i] <-
-    basic_line(shape_s$geometry[i], 
-               cellnumber = shape_s$cellnumber[i],
-               rotation = shape_s$rotation[i]) %>% 
-    st_sample(round(shape_s$skel_number[i])) %>% 
-    st_union()
-}
   
-for(i in which(shape_s$strat == F & shape_s$skel_number != 0)){
-    shape_s$geometry[i] <- st_sample(shape_s$geometry[i], 
-                                     shape_s$skel_number[i]) %>% 
-      st_union()
-    
-}
+  stopifnot(c("sf", "data.frame") %in% class(shape_mod)  &
+              class(skeleton_mat) == "data.frame")
   
-  spoint <-  st_intersection(shape_s,  shape_mod$geometry) %>% 
-    st_collection_extract(type = "POINT") %>%  
-    st_cast("POINT") %>% 
-    group_by(name) %>% 
-    mutate(random_part = runif(n(), min = skel_dim_from, max = skel_dim_to)) %>% 
-    mutate(random_part = random_part/sum(random_part)) %>% 
-    mutate(area_size = area_comp * random_part) %>% 
-    ungroup()
-
-  xy_cord <- spoint %>%  #Koordinaten für die Funktion extrahieren:
-    st_coordinates() 
-
-  xy_cord <- as.data.frame(xy_cord)
-  #spoint3 <- left_join(spoint2, xy_cord, by = c("name"="L1"))
-
-  spoint4 <- spoint %>% 
-    dplyr::bind_cols(xy_cord)
+  stopifnot(c("name", "skel_ab", "skel_dim_from", "skel_dim_to", "area") %in%
+              colnames(shape_mod))
   
-  for(i in 1 : nrow(xy_cord)){
-    st_geometry(spoint4)[i] <- convex_poly(data_skel = spoint4[i,])
+  stopifnot(c("name","nSides","smooth", "union", 
+              "phi", "strat", "cellnumber", "rotation") %in% 
+              colnames(skeleton_mat))
+
+
+  shape_s  <- shape_mod %>%
+    #select the default parameter: 
+    dplyr::select(name, skel_ab, skel_dim_from, skel_dim_to, area) %>%
+    dplyr::group_by(name) %>% 
+    #calculate the absolute skeleton content
+    dplyr::mutate(area_comp = area * skel_ab) %>% 
+    #calculate the mean of skeleton dimension
+    dplyr::mutate(skel_dim_mean = mean(c(skel_dim_from, skel_dim_to), rm.na = T)) %>% 
+    #calculate the number of skeleton
+    dplyr::mutate(skel_number = area_comp/(skel_dim_mean * skel_dim_mean))  %>%
+    tidyr::replace_na(list(skel_number = 0))  %>% 
+    #join with skeleton parameter:
+    dplyr::left_join(skeleton_mat, by = "name") %>% 
+    dplyr::ungroup()
+  
+  #Calculating the coordinates for the stratified rock
+  for(i in which(shape_s$strat == T)){
+    shape_s$geometry[i] <-
+      basic_line(shape_s$geometry[i], 
+                 cellnumber = shape_s$cellnumber[i],
+                 rotation = shape_s$rotation[i]) %>% 
+      sf::st_sample(round(shape_s$skel_number[i])) %>% 
+      sf::st_union()
   }
-  
-  spoint_clean <-  spoint4 %>%
-    st_intersection(shape_mod$geometry)
 
+  #Calculating the coordinates for the random rock
+  for(i in which(shape_s$strat == F & shape_s$skel_number != 0)){
+    shape_s$geometry[i] <- sf::st_sample(shape_s$geometry[i], 
+                                     shape_s$skel_number[i]) %>% 
+      sf::st_union()
+    
+  }
+
+  #extract the point geometries (the coordinates in which the rock is placed)
+  spoint <-  sf::st_intersection(shape_s,  shape_mod$geometry) %>% 
+    sf::st_collection_extract(type = "POINT") %>%  
+    sf::st_cast("POINT") %>% 
+    dplyr::group_by(name) %>% 
+    #inserting a random parameter of the rock surface 
+    dplyr::mutate(random_part = runif(n(), min = skel_dim_from, max = skel_dim_to)) %>% 
+    dplyr::mutate(random_part = random_part/sum(random_part)) %>% 
+    dplyr::mutate(area_size = area_comp * random_part) %>% 
+    dplyr::ungroup()
+
+  spoint_poly <- point_2_polygon(sf_point = spoint)
+  
+  #clip the rockshape with the origen geometry
+  spoint_clean <-  spoint_poly %>%
+    sf::st_intersection(shape_mod$geometry)
+
+  #smoth the rock geometry
    spoint_clean[which(spoint_clean$smooth == T),] <- 
-     smooth(spoint_clean[which(spoint_clean$smooth == T),], method = "ksmooth")
-test22 <-    spoint_clean %>% 
-  select(name, union, geometry) %>% 
-  filter(union == TRUE) %>% 
-  group_by(name) %>% 
-  summarise()
-test44 <- spoint_clean %>%
-  filter(union == FALSE) %>% 
-  select(name) 
-erg <- rbind(test22, test44)
+     smoothr::smooth(spoint_clean[which(spoint_clean$smooth == T),])#,
+                     #method = "ksmooth")
+   
+   #union the geometrys
+   poly1 <- spoint_clean %>% 
+     dplyr::select(name, union) %>% 
+     dplyr::filter(union == TRUE) %>% 
+     dplyr::group_by(name) %>% 
+     dplyr::summarise()   
+
+   poly2 <- spoint_clean %>%
+     dplyr::filter(union == FALSE) %>% 
+     dplyr::select(name) 
+   
+   erg <- rbind(poly1, poly2)
 
   return(erg)
 }
-
 

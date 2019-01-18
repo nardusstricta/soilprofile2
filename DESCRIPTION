@@ -18,7 +18,7 @@ LazyData: true
 RoxygenNote: 6.1.1
 Imports: 
     dplyr (>= 0.7.8), 
-    ggplot2 (>= 3.1.0.9000),
+    ggplot2 (>= 3.1.0),
     magrittr (>= 1.5),
     aqp (>= 1.16-3),
     tidyr (>= 0.8.2),

@@ -4,12 +4,12 @@
 \alias{smooth_trans}
 \title{Horizons transition}
 \usage{
-smooth_trans(Line, shape_mod, shape = 5, seed = 33, clean_cut = T)
+smooth_trans(lmod, shape_mod, shape = 15, seed = 33)
 }
 \arguments{
-\item{Line}{The line layer, which has been build by the \link[soilprofile2]{line_mod} function.}
-
 \item{shape_mod}{The table modified by new lines  \link[soilprofile2]{split_polygon}}
+
+\item{Line}{The line layer, which has been build by the \link[soilprofile2]{line_mod} function.}
 }
 \value{
 A point layer with a polygons for the color transition

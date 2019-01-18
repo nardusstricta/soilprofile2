@@ -9,52 +9,49 @@
 #'
 #' @export
 
-smooth_trans <- function(Line, shape_mod, shape = 5, seed = 33, clean_cut = T){
+smooth_trans <- function(lmod, shape_mod, shape = 15, seed = 33){
+ # benchmark("data_mod1" = {
   df <- shape_mod
-  st_geometry(df) <- NULL
   
-  df_line <- Line
+  sf::st_geometry(df) <- NULL
+  
+  shape_mod <- shape_mod %>%
+    dplyr::select(name)
+  
+  df_line <- lmod %>% 
+    dplyr::select(name)
   ##
   #Polygone erstelln um einen schwammigen Ünbergang zu gestalten:
   ##
   
   #1 Buffer:
   df_buffer <- df_line %>% 
-    right_join(df, by = "name") %>% 
-    group_by(name) %>% 
-    st_buffer(dist = df$buffer_size, endCapStyle = "FLAT") %>% 
-    filter(buffer_size != 0) %>%
-    st_intersection(shape_mod) %>% 
+    dplyr::right_join(df, by = "name") %>% 
+    dplyr::group_by(name) %>% 
+    sf::st_buffer(dist = df$buffer_size, endCapStyle = "FLAT") %>% 
+    dplyr::filter(buffer_size != 0) %>%
+    sf::st_intersection(shape_mod) %>% 
     dplyr::select(name, nSides, rate, buffer_number) 
   
   #Punkte auf dem Buffer verteilen:
   set.seed(seed)
-  df_sample  <- st_sample(df_buffer, size= df_buffer$buffer_number)
-  df_inter <-  st_intersection(df_buffer, df_sample) #nur um die attribiutes zu behalten
+  df_sample  <- sf::st_sample(df_buffer, size= df_buffer$buffer_number)
+  df_inter <-  sf::st_intersection(df_buffer, df_sample) #nur um die attribiutes zu behalten
   
   #Erstellen der Polygone: 
   #1.Varible Größe der Fläche und deren Verteilung 
   #2. Form der Fläche 
   temp0 <- df_inter %>% 
-    group_by(name) %>% 
-    mutate(area_size = rgamma(n(), shape = shape, rate = max(rate))) %>% 
-    ungroup()
-  
-  point_2_polygon <- df_inter %>%  #Koordinaten für die Funktion extrahieren:
-    st_coordinates()
-  
-  var <- as.data.frame(point_2_polygon)
-  temp1 <- temp0
-  
-  #Geometrien Verändern: 
-  for(i in 1 : nrow(var)){
-    st_geometry(temp1)[i] <- convex_poly(nSides = temp0$nSides[i],
-                                         area = temp0$area_size[i], 
-                                         xstart = var$X[i], 
-                                         ystart = var$Y[i])
-  }
-  temp2 <- temp1 
-  tf <- st_intersects(temp1, shape_mod$geometry,  sparse = F )
+    dplyr::group_by(name) %>% 
+    dplyr::mutate(area_size = rgamma(n(), shape = shape, rate = max(rate))) %>% 
+    dplyr::ungroup()
+  #}, "point_to_polygon" = {
+  temp1 <- point_2_polygon(temp0)
+ # }, "smooth" = {
+  temp1 <- smoothr::smooth(temp1)#, method = "ksmooth")
+
+ # }, "clean0" = {
+  tf <- sf::st_intersects(temp1, shape_mod$geometry,  sparse = F )
   tf1 <- cbind(tf, temp1$name)
   
   for(i in 1:5){
@@ -67,34 +64,49 @@ smooth_trans <- function(Line, shape_mod, shape = 5, seed = 33, clean_cut = T){
     }
   }
   
-  temp2$name <- tf1[,6] #Namen überschreinen
-  if(clean_cut == T){
+  temp1$name <- tf1[,6] #Namen überschreiben
+
     #clean cut 
-    temp_int <- temp2 %>% 
-      rowwise() %>% 
-      mutate(int = if_else(any(st_intersects(geometry, Line, sparse = F)) == T, T, F)) %>%
-      filter(int == F) %>% 
-      st_sf()
+    temp_int <- temp1 %>% 
+      dplyr::rowwise() %>% 
+      dplyr::mutate(int = if_else(any(st_intersects(geometry, df_line, sparse = F)) == T, T, F)) %>%
+      sf::st_sf() %>% 
+      dplyr::select(name, int)
+ # }, "clip1" = {   
+    #shape_mod Polygon verändern: 
+    #1. Alle die auf dem Übergang liegen:
+    temp2 <- temp_int %>% 
+      dplyr::filter(int == T) %>% 
+      dplyr::select(name) %>%
+      dplyr::group_by(name) %>% 
+      dplyr::summarise(do_union = F) %>% 
+      sf::st_buffer(0.0) %>% 
+      sf::st_intersection(st_union(shape_mod)) 
     
+    shape_mod1 <- sf::st_difference(shape_mod, st_combine(temp2)) %>% 
+      dplyr::select(name) %>% 
+      rbind(temp2) %>%   
+      dplyr::group_by(name) %>% 
+      dplyr::summarise(do_union = T) 
+#  }, "clip2" = {   
+#2. Alle weiteren
     temp3 <- temp_int %>% 
-      select(name, geometry) %>%
-      group_by(name) %>% 
-      summarise(do_union = F) %>%
-      st_buffer(0.0)  %>% 
-      st_intersection(st_union(shape_mod)) 
+      dplyr::filter(int == F) %>% 
+      dplyr::select(name) %>%
+      dplyr::group_by(name) %>% 
+      dplyr::summarise(do_union = F) %>% 
+      sf::st_buffer(0.0) %>% 
+      sf::st_intersection(st_union(shape_mod1))
+
+    shape_mod2 <- st_difference(shape_mod1, st_combine(temp3)) %>% 
+      dplyr::select(name) %>% 
+      rbind(temp3) %>%   
+      dplyr::group_by(name) %>% 
+      dplyr::summarise(do_union = FALSE)
     
-    erg <- shape_mod %>%
-      #filter(name %in% temp3$name) %>%
-      #rowwise() %>% 
-      mutate(geometry = ifelse(name %in% temp3$name, temp3$geometry, geometry))
-    erg <- erg %>% 
-      st_sf(geometry = erg$geometry)
-       
-      
-      
-    return(erg)
-  }else{
-    return(temp2)
-  }
-  
+ # }, replications = 1)   
+    stopifnot("sf" %in% class(shape_mod2))
+
+    return(shape_mod2)
+    
 }

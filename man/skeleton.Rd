@@ -4,16 +4,15 @@
 \alias{skeleton}
 \title{soil skeleton}
 \usage{
-This function is used internally by the \link[soilprofile2]{line_mod} function. The corresponding Y values are created with the similar function \link[soilprofile2]{genY_fun}.
+skeleton(shape_mod, skeleton_mat)
 }
 \arguments{
-\item{shape_mod}{A numeric vector that giving the start and end of the horizont line}
+\item{shape_mod}{A simple feature class object with the base geometry. At least the following column names must be present in the attributes: name (horizont id), skel_ab (abundanz), skel_dim_from (dimension from), skel_dim_to (dimension to), area (area).}
 
-\item{point_shape}{Logical value specifying whether to include an exclamation
-point after the text}
+\item{skeleton_mat}{A data frame with the following parameters (as column names) for specifying the rock form:  "name", "nSides", "smooth", "union", "phi", "strat", "cellnumber", "rotation"}
 }
 \value{
-This function returns 12 X-value. 10 of this are new generatet by the \link[base]{runif}  Funktion
+This function returns 12 X-value. 10 of this are new generatet by the \link[base]{runif}  Funktion. If a parameter is unknown set 0 or NA in the cell.
 }
 \description{
 generates new layer for the soil skeleton
