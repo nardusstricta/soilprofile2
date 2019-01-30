@@ -11,6 +11,8 @@ point_2_polygon <- function(sf_point){
   
   stopifnot("sf" %in% class(sf_point))
   stopifnot("nSides" %in% colnames(sf_point))
+  stopifnot("area_size" %in% colnames(sf_point))
+  
   
   xy_cord <- sf_point %>%  #Koordinaten für die Funktion extrahieren:
     st_coordinates()
@@ -18,7 +20,7 @@ point_2_polygon <- function(sf_point){
   df_attr <- sf_point
   st_geometry(df_attr) <- NULL
   
-  
+
   geom <- do.call(
     rbind, lapply(
       1:nrow(xy_cord), function(i){

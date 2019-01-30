@@ -4,7 +4,7 @@
 \alias{smooth_trans}
 \title{Horizons transition}
 \usage{
-smooth_trans(lmod, shape_mod, shape = 15, seed = 33)
+smooth_trans(lmod, shape_mod, attr_df, shape = 15, seed = 33)
 }
 \arguments{
 \item{shape_mod}{The table modified by new lines  \link[soilprofile2]{split_polygon}}

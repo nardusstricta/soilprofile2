@@ -48,6 +48,7 @@
 #'  
 #' @export
 
+
 texture <- function(shape, fun_horizont, buffer, ...){
   
   pars <- shape$geometry

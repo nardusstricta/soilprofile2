@@ -9,17 +9,19 @@
 #'
 #' @export
 
-smooth_trans <- function(lmod, shape_mod, shape = 15, seed = 33){
+smooth_trans <- function(lmod, shape_mod, attr_df,  shape = 15, seed = 33){
  # benchmark("data_mod1" = {
-  df <- shape_mod
+  df <- attr_df
+  attr_default <- shape_mod
   
-  sf::st_geometry(df) <- NULL
-  
+  st_geometry(attr_default) <- NULL 
+
   shape_mod <- shape_mod %>%
     dplyr::select(name)
-  
+
   df_line <- lmod %>% 
     dplyr::select(name)
+  
   ##
   #Polygone erstelln um einen schwammigen Ünbergang zu gestalten:
   ##
@@ -72,6 +74,7 @@ smooth_trans <- function(lmod, shape_mod, shape = 15, seed = 33){
       dplyr::mutate(int = if_else(any(st_intersects(geometry, df_line, sparse = F)) == T, T, F)) %>%
       sf::st_sf() %>% 
       dplyr::select(name, int)
+    
  # }, "clip1" = {   
     #shape_mod Polygon verändern: 
     #1. Alle die auf dem Übergang liegen:
@@ -88,6 +91,7 @@ smooth_trans <- function(lmod, shape_mod, shape = 15, seed = 33){
       rbind(temp2) %>%   
       dplyr::group_by(name) %>% 
       dplyr::summarise(do_union = T) 
+    
 #  }, "clip2" = {   
 #2. Alle weiteren
     temp3 <- temp_int %>% 
@@ -102,7 +106,8 @@ smooth_trans <- function(lmod, shape_mod, shape = 15, seed = 33){
       dplyr::select(name) %>% 
       rbind(temp3) %>%   
       dplyr::group_by(name) %>% 
-      dplyr::summarise(do_union = FALSE)
+      dplyr::summarise(do_union = FALSE) %>% 
+      left_join(attr_default, by = "name")
     
  # }, replications = 1)   
     stopifnot("sf" %in% class(shape_mod2))

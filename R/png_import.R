@@ -7,46 +7,62 @@
 #' @param path a numeric value between 1 and 6 calling the stored L-system
 #' @param mod_sf A layer with the skeleton content as polygon (bei fehlen gibt es noch einen Fehler)
 #' @export 
-png_import <- function(path, mod_sf){
-  #import file:
-  path_list <- list.files(path, full.names = F, pattern ="*png") 
-  
-  #select only imag from existing sf_mod horizont:
-  name_raw0 <- substr(path_list, 1,nchar(path_list)-4)
-  
-  name_temp <- path_list[which(name_raw0 %in% mod_sf$nameC)]
-  name_raw <- name_raw0[which(name_raw0 %in% mod_sf$nameC)]
-  
-  mod_sf <- mod_sf %>% 
-    filter(nameC %in% name_raw)
-  
-  #read image
-  png_veg <- magick::image_read(paste0(path, path_list), name_temp)
+#' 
 
-  #build temp path:
-  tiff_path <- file.path(tempdir(), name_raw)
-  #tempfile()
-  #write image
-  for (i in 1:length(png_veg)){
-    magick::image_write(png_veg[i], path = tiff_path[i], format = 'tiff')
-  }
-  
-  raster_list <- sapply(tiff_path, raster::brick)
-  names(raster_list) <- name_raw
+multiple_png <- function(shape_temp, path_temp, ...){
+  stopifnot(nrow(shape_temp)==length(path_temp))
+  geom1 <- do.call(
+    rbind, lapply(
+      1:nrow(shape_temp), function(i){
+        raster2polygon(file_path = path_temp[i], horizont = shape_temp[i,], ...)
+      }
+    )
+  )
+  return(geom1)
+}
 
-  #set extent and mask the image:
+
+#' imports png file an maks to the specific horizont position
+#'
+#' sourse sollte noch angepasst werden, evt dropbox oder db
+#' 
+#' 
+#' 
+#' @param path a numeric value between 1 and 6 calling the stored L-system
+#' @param mod_sf A layer with the skeleton content as polygon (bei fehlen gibt es noch einen Fehler)
+#' @export 
+#' 
+png_import <- function(file_path, horizont, smoothness, raster2polygon = T){
   
-   bbox1 <- sapply(mod_sf$geometry, st_bbox)
-   srtm_masked <- list()
-   for(i in 1:length(raster_list)){
-     r_index <- which(names(raster_list) == mod_sf$nameC[i])
-     raster::extent(raster_list[[r_index]]) <- bbox1[c(1,3,2,4),i]
-     srtm_masked[[i]] <- raster::mask(raster_list[[r_index]], as(mod_sf[i,], "Spatial"))
-   }
-   
+  png_temp <- magick::image_read(file_path)
+  
+  tiff_file <- tempfile()
+  
+  magick::image_write(png_temp, path = tiff_file, format = 'tiff')
+  
+  r <- raster::raster(tiff_file)
+  
+  bbox1 <- sf::st_bbox(horizont)
+  srtm_masked <- list()
+  
+  #r_index <- which(names(raster_list) == mod_sf$nameC[i])
+  raster::extent(r) <- bbox1[c(1,3,2,4)]
+  
+  srtm_masked <- raster::mask(r, as(horizont, "Spatial"))
+  
+  r <- srtm_masked
+  
+  if(raster2polygon == T ){
+    r <- raster::cut(r, breaks = c( 150,-Inf, Inf)) 
     
+    r_poly <- raster::rasterToPolygons(r, function(x){x == 1}, dissolve = TRUE) %>% 
+      sf::st_as_sf()
+    
+    erg <- smoothr::smooth(r_poly, method = "ksmooth", smoothness = smoothness)
+    return(erg)
+    
+  }else{
+    return(r)
+  }
 
-  return(srtm_masked)
-  
-  
 }

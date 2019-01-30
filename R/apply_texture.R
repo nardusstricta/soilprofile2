@@ -49,49 +49,46 @@
 #' summarise(do_union = FALSE) %>%
 #' st_cast("POLYGON") %>%
 #' st_cast("MULTIPOLYGON")
-#' \dontrun{
 #' ## Creation of the patterns
 #' texture_example <- apply_texture(shape = shape_example, buffer = -1.3) 
 #' 
 #' ## Plotting Data
 #' library(ggplot2)
 #' texture_example %>% ggplot() + geom_sf()
-#' }
 #' @export
 #' @author Gabriel Holz
 
 
 apply_texture <- function(shape, buffer = -1){
   
+  stopifnot("sf" %in% class(shape))
+  stopifnot("nameC" %in% colnames(shape))
+  
 
   texture_sf <- shape %>% 
-    dplyr::mutate(fun = c(get(nameC))) %>% 
+    dplyr::mutate(fun = c(get(as.character(nameC)))) %>% 
     dplyr::mutate(fun = ifelse(fun == "NULL", 
                                c(soilprofile2::build_random_pattern), fun)) 
-
-  temp_geom <- sf::st_sf(par_ID = 0,
-                         nameC = "empty",
-                         geometry = shape$geometry[1])
-                
   
-  for (i in 1:nrow(texture_sf)){
-    temp_geom <- texture(shape = texture_sf[i,],
-                         fun_horizont = texture_sf$fun[[i]],
-                         buffer = buffer
-    ) %>% 
-      rbind(temp_geom)
+  temp_geom <- do.call(
+    rbind, lapply(
+      1:nrow(texture_sf), function(i){
+        texture(shape = texture_sf[i,],
+                fun_horizont = texture_sf$fun[[i]],
+                buffer = buffer
+        )
+      }
+    )
+  )
 
-  }
-  temp_geom <- temp_geom[-nrow(temp_geom),]
 
   ##
   #add graphic pars:
   ##
+  
   erg <- temp_geom %>% 
     dplyr::left_join(df_par_wide, 
                      by = c("nameC", "par_ID")) 
   
   return(erg)
 }
-data(df_par_wide)
-

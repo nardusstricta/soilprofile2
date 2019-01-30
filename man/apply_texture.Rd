@@ -60,14 +60,12 @@ group_by(nameC) \%>\%
 summarise(do_union = FALSE) \%>\%
 st_cast("POLYGON") \%>\%
 st_cast("MULTIPOLYGON")
-\dontrun{
 ## Creation of the patterns
 texture_example <- apply_texture(shape = shape_example, buffer = -1.3) 
 
 ## Plotting Data
 library(ggplot2)
 texture_example \%>\% ggplot() + geom_sf()
-}
 }
 \author{
 Gabriel Holz
