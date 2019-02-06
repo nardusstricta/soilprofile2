@@ -1,3 +1,42 @@
+#' basic random line
+#'
+#' This function draws a set of randompolygons.
+#'
+#' @param polygon A polygon-layer, which has been build by the \link[soilprofile2]{texture} function.
+#' @param number Number of polygons
+#' @param line_length number of polygon sides
+#' @param variation smooth by the \link[smoothr]{smooth} function with the methode "ksmooth"
+#' @param smoothness
+#' 
+#' @return A unit multipolygon (sf) with one parID column
+#'
+#' @export
+
+
+random_line <- function(polygon, number = 800, line_length = .8, variation = 1, smoothness = 5){
+  point_temp <- st_sample(polygon, number)
+  geom <- do.call(
+    rbind, lapply(
+      1:length(point_temp), function(i){
+        buffer_temp <- st_buffer(point_temp[i], abs(rnorm(1, mean=line_length, sd = variation)))
+        
+        point_int <- st_intersection(point_temp, buffer_temp) %>% 
+          st_sf(id = i, geometry = .) 
+          return(point_int)
+      }
+    )
+  )
+  
+  erg <- geom %>% 
+    group_by(id) %>% 
+    filter(length(id) >= 2) %>% 
+    summarise(do_union = T) %>% 
+    sf::st_cast("LINESTRING") %>%
+    smoothr::smooth(method = "ksmooth", smoothness = smoothness)
+  return(erg)
+
+}
+
 #' basic random polygon 
 #'
 #' This function draws a set of randompolygons.
@@ -28,12 +67,12 @@ basic_random_polygon <- function(polygon, size, number, nSides, sm = T){
 
   sf_polygon <- point_2_polygon(point_samp)
 
-  sf::st_is_valid(sf_polygon)
+  #sf::st_is_valid(sf_polygon)
   
   erg <- sf_polygon %>% 
     sf::st_intersection(polygon) %>% 
     sf::st_union() %>% 
-    sf::st_sf(parID = 1)
+    sf::st_sf(parID = 1, geometry = .)
   
   if(sm == T){
     erg  <-  smoothr::smooth(erg)
@@ -57,7 +96,7 @@ basic_random_polygon <- function(polygon, size, number, nSides, sm = T){
 basic_polygon <- function(polygon, cellsize, square = F){
   sf::st_make_grid(polygon, what = "polygons", cellsize = cellsize,  square = square) %>% 
     sf::st_union()%>% 
-    sf::st_sf(parID = 1)
+    sf::st_sf(parID = 1, geometry = .)
 }
 
 #' basic line 
@@ -92,7 +131,7 @@ basic_line <- function(polygon, cellnumber = 22, rotation = 12){
     sf::st_cast("LINESTRING") %>% 
     sf::st_cast("MULTILINESTRING") %>% 
     sf::st_union() %>% 
-    sf::st_sf(parID = 1)
+    sf::st_sf(parID = 1, geometry = .)
   return(line_sf)
   
 }
@@ -111,11 +150,12 @@ basic_point <- function(polygon, cellsize = 12, random = FALSE){
   if(random == T){
     sf::st_sample(polygon, size = cellsize) %>% 
       sf::st_union() %>% 
-      sf::st_sf(parID = 1) #geometry colum named "."
+      sf::st_sf(parID = 1, geometry = .) #geometry colum named "."
   }else{
     sf::st_make_grid(polygon, cellsize = cellsize,  what = "centers", square = TRUE) %>% 
       sf::st_union() %>% 
-      sf::st_sf(parID = 1) 
+      sf::st_sf(parID = 1, geometry = .) 
   }
   
 }
+

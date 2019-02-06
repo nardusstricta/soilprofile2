@@ -40,7 +40,13 @@ png_import <- function(file_path, horizont, smoothness, raster2polygon = T){
   
   magick::image_write(png_temp, path = tiff_file, format = 'tiff')
   
+  if(raster2polygon == T){
   r <- raster::raster(tiff_file)
+  }else{
+  r <- raster::brick(tiff_file)
+  }
+  
+  
   
   bbox1 <- sf::st_bbox(horizont)
   srtm_masked <- list()

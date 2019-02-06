@@ -9,13 +9,15 @@
 #'   \item The depth must be given in a column named "depth" in the following format: "0-20" This example shows a horizon extension from 0 cm to minus 20 cm.
 #'   \item The color must be specified in a column named "col" according to the system of Munsell.
 #'   e.g. 10YR 5/4 (Important is the blank between the Hue and value and the backslash between the value and the Chroma).
+#'   \item The rock content must be indicated in the following form: "2-3". The column must be called skel_dim. 
 #' }
 #' @return A data frame with the following additional columns:
 #' depth: ("from1", "to1"), "value_col", "chroma_col", "rgb_col" (calculated using the function \link[aqp]{munsell2rgb}, nameC (A new name column, the old one was replaced with an numeric id). skel_dim_from and skel_dim_to (seperate the skel dimension column))
 #' @examples 
-#' data_example <- data.frame(name = c("Ah", "Bv"),
+#' data_example <- data.frame(name = c("Ah", "Bv"), 
 #' depth = c("0-22", "22-33.434"), 
-#' col = c("10YR 4/3", "5Y 5/3"))
+#' col = c("10YR 4/3", "5Y 5/3"), 
+#' skel_dim= c("3-30","45-50"))
 #' print(data_mod(data_example))
 #' @export
 #' @importFrom tidyr separate gather
@@ -23,8 +25,11 @@
 #' @importFrom magrittr "%>%"
 #' @importFrom lwgeom st_split
 
-
+#munsell::mnsl("5PB 5/10")
 data_mod <- function(df_org){
+  stopifnot("data.frame" %in% class(df_org))
+  stopifnot(c("depth", "name", "skel_dim", "col") %in% colnames(df_org))
+  
   df_org %>% 
     tidyr::separate(depth, c("from1", "to1"), "-") %>% 
     dplyr::mutate(nameC = name) %>%
@@ -37,4 +42,5 @@ data_mod <- function(df_org){
     dplyr::mutate(value_col = as.numeric(value_col)) %>% 
     dplyr::mutate(chroma_col = as.numeric(chroma_col)) %>% 
     dplyr::mutate(rgb_col = aqp::munsell2rgb(hue_col, value_col, chroma_col))
+  
 }

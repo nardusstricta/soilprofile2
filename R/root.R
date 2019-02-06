@@ -16,15 +16,7 @@ root <- function(Plant = 1,
                  rules=list("F"="FF-[-F+F+F]+[+F-F-F]"),
                  angle=22.5,
                  depth=2){
-  
-  if(Plant == 1){
-    #Plant 1
-    axiom="F"
-    rules=list("F"="FF-[-F+F+F]+[+F-F-F]")
-    angle=22.5
-    depth=2
-  }
-  
+
   
   if(Plant == 2){
     #Plant 2
@@ -65,15 +57,16 @@ root <- function(Plant = 1,
     angle=20
     depth=5
   }
+  start <- c(0,0)
 
-  for (i in 1:depth) axiom = gsubfn(".", rules, axiom)
+  for (i in 1:depth) axiom = gsubfn::gsubfn(".", rules, axiom)
   
-    actions = str_extract_all(axiom, "\\d*\\+|\\d*\\-|F|L|R|\\[|\\]|\\|") %>%
+    actions = stringr::str_extract_all(axiom, "\\d*\\+|\\d*\\-|F|L|R|\\[|\\]|\\|") %>%
     unlist
   
   
-  status = data.frame(x=numeric(0), y=numeric(0), alfa=numeric(0))
-  points = data.frame(x1 = start[1], 
+  status <- data.frame(x=numeric(0), y=numeric(0), alfa=numeric(0))
+  points <- data.frame(x1 = start[1], 
                       y1 = start[2], 
                       x2 = NA, 
                       y2 = NA, 
@@ -168,6 +161,7 @@ root <- function(Plant = 1,
 #' @return This function returns a new sf-line geometry with an id column 
 #' @export
 
+
 root_position <- function(root_inp, horizont, spoint, sample_size){
   if(!is.null(spoint)){
     temp <- st_combine(spoint) %>% 
@@ -207,7 +201,7 @@ root_position <- function(root_inp, horizont, spoint, sample_size){
   lines_merged <- st_cast(st_line_merge(
     st_union(st_cast(line_sf, "MULTILINESTRING"))), "LINESTRING")
   
-  ff <- smooth(lines_merged, method = "chaikin")
+  ff <- smoothr::smooth(lines_merged, method = "chaikin")
   
   return(ff)
 }

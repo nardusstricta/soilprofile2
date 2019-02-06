@@ -14,6 +14,7 @@ data_mod(df_org)
   \item The depth must be given in a column named "depth" in the following format: "0-20" This example shows a horizon extension from 0 cm to minus 20 cm.
   \item The color must be specified in a column named "col" according to the system of Munsell.
   e.g. 10YR 5/4 (Important is the blank between the Hue and value and the backslash between the value and the Chroma).
+  \item The rock content must be indicated in the following form: "2-3". The column must be called skel_dim. 
 }}
 }
 \value{
@@ -25,8 +26,9 @@ This function transforms the raw profiledata.
 Funktion to modifide the transition of Soil horizon, by adding the Buffer- size, -number, and Shape of the Polygons, wich will be lay in the other horizont.
 }
 \examples{
-data_example <- data.frame(name = c("Ah", "Bv"),
+data_example <- data.frame(name = c("Ah", "Bv"), 
 depth = c("0-22", "22-33.434"), 
-col = c("10YR 4/3", "5Y 5/3"))
+col = c("10YR 4/3", "5Y 5/3"), 
+skel_dim= c("3-30","45-50"))
 print(data_mod(data_example))
 }
