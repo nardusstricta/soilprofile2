@@ -26,9 +26,10 @@ This function transforms the raw profiledata.
 Funktion to modifide the transition of Soil horizon, by adding the Buffer- size, -number, and Shape of the Polygons, wich will be lay in the other horizont.
 }
 \examples{
-data_example <- data.frame(name = c("Ah", "Bv"), 
-depth = c("0-22", "22-33.434"), 
-col = c("10YR 4/3", "5Y 5/3"), 
-skel_dim= c("3-30","45-50"))
+data_example <- data.frame(name = c("Ah", "Bv"),
+                           depth = c("0-22", "22-33.434"),
+                           col = c("10YR 4/3", "5Y 5/3"),
+                           skel_dim= c("3-30","45-50"))
+
 print(data_mod(data_example))
 }

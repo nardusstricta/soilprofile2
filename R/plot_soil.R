@@ -7,6 +7,23 @@
 #' @return A unit sf layer with an parID column
 #'
 #' @export
+soil_theme <- function(){
+  theme(axis.title.x=element_blank(),
+        axis.text.x=element_blank(),
+        axis.ticks.x=element_blank(),
+        panel.background = element_blank())
+  
+}
+
+#' wrapper function for plot
+#'
+#' This function draws a Ah pattern, with the following  helper fuction \link[soilprofile2]{basic_point}
+#'
+#' @param polygon A polygon-layer, which has been build by the \link[soilprofile2]{texture} function.
+#' 
+#' @return A unit sf layer with an parID column
+#'
+#' @export
 plot_soil <- function(data, raster_list = NULL){
   
   texture_sf <- apply_texture(shape = data)
