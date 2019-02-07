@@ -12,7 +12,7 @@ Description: This package provides functions to graphically represent
 	     function. Different layers were disignd with the new SF packager, 
 	     and plottet with ggplot2.
 Depends: R (>= 3.4.4)
-License: MIT
+License: GPL v3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.1.1
