@@ -23,21 +23,19 @@ meaningful soil color may be represented via the plot
 function.
 
 ```{r smooth-lines, dpi = 144}
-#Creat same example data:
+#load packages:
 library(dplyr)
 library(soilprofile2)
 library(ggplot2)
 
-geom_example <- data.frame(name = c(1, 2),
-                           from1 = c(0,20),
-                           to1 = c(20, 40)
-) %>%
-  cord_setting(plot_width = 3)
-
-attri_example <- data.frame(name = c(1, 2),
-                            rgb_col = c("#6F5F4CFF", "#947650FF"),
-                            nameC = c("Ah", "Bv")
-)
+#create an example dataset and modify the color and depths 
+df_example <-  data.frame(name = c("Ah", "Bv"), 
+                          depth = c("0-22", "22-33.434"), 
+                          col = c("10YR 4/3", "5Y 5/3"),
+                          skel_dim= c(".5-1","1-2"), 
+                          skel_ab = c(0.2, 0.6)) %>% 
+  data_mod()
+print(df_example)
 ```
 
 

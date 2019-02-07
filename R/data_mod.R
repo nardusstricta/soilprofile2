@@ -14,10 +14,11 @@
 #' @return A data frame with the following additional columns:
 #' depth: ("from1", "to1"), "value_col", "chroma_col", "rgb_col" (calculated using the function \link[aqp]{munsell2rgb}, nameC (A new name column, the old one was replaced with an numeric id). skel_dim_from and skel_dim_to (seperate the skel dimension column))
 #' @examples 
-#' data_example <- data.frame(name = c("Ah", "Bv"), 
-#' depth = c("0-22", "22-33.434"), 
-#' col = c("10YR 4/3", "5Y 5/3"), 
-#' skel_dim= c("3-30","45-50"))
+#' data_example <- data.frame(name = c("Ah", "Bv"),
+#'                            depth = c("0-22", "22-33.434"),
+#'                            col = c("10YR 4/3", "5Y 5/3"),
+#'                            skel_dim= c("3-30","45-50"))
+#' 
 #' print(data_mod(data_example))
 #' @export
 #' @importFrom tidyr separate gather
@@ -25,11 +26,10 @@
 #' @importFrom magrittr "%>%"
 #' @importFrom lwgeom st_split
 
-#munsell::mnsl("5PB 5/10")
+
 data_mod <- function(df_org){
   stopifnot("data.frame" %in% class(df_org))
   stopifnot(c("depth", "name", "skel_dim", "col") %in% colnames(df_org))
-  
   df_org %>% 
     tidyr::separate(depth, c("from1", "to1"), "-") %>% 
     dplyr::mutate(nameC = name) %>%
@@ -39,6 +39,7 @@ data_mod <- function(df_org){
     tidyr::separate(skel_dim, c("skel_dim_from", "skel_dim_to"), "-", convert = T) %>% 
     tidyr::separate(col, c("hue_col", "temp"), " ") %>% 
     tidyr::separate(temp, c("value_col", "chroma_col"), "/") %>% 
+    ##munsell::mnsl("5Y 5/3") not run error: some colours have chromas that are not multiples of two:
     dplyr::mutate(value_col = as.numeric(value_col)) %>% 
     dplyr::mutate(chroma_col = as.numeric(chroma_col)) %>% 
     dplyr::mutate(rgb_col = aqp::munsell2rgb(hue_col, value_col, chroma_col))
