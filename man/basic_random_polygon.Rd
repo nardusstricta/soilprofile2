@@ -4,22 +4,35 @@
 \alias{basic_random_polygon}
 \title{basic random polygon}
 \usage{
-basic_random_polygon(polygon, size, number, nSides, sm = T)
+basic_random_polygon(polygon, size, number, nSides, sm = T, ...)
 }
 \arguments{
-\item{polygon}{A polygon-layer, which has been build by the \link[soilprofile2]{texture} function.}
+\item{polygon}{A Simple Feature polygon or  just a "sfc_MULTIPOLYGON" or "POLYGON" geometry.}
 
-\item{size}{Percentage area of input polygon}
+\item{size}{percentage of output area relative to input area}
 
-\item{number}{Number of polygons}
+\item{number}{number of polygons}
 
 \item{nSides}{number of polygon sides}
 
-\item{sm}{smooth by the \link[smoothr]{smooth} function with the methode "ksmooth"}
+\item{sm}{smooth by the \link[smoothr]{smooth} function}
+
+\item{...}{is passed to function \link[smoothr]{smooth}}
 }
 \value{
-A unit multipolygon (sf) with one parID column
+A unit multipolygon Simple Feature with one parID column
 }
 \description{
-This function draws a set of randompolygons.
+This function draws a set of random polygons.
+}
+\examples{
+poly_example <- sf::st_polygon(list(matrix(c(0,0,10,0,10,10,0,10,0,0),
+ncol=2, byrow=TRUE)))
+
+poly_example1 <- basic_random_polygon(polygon = poly_example, 
+                                      size = .3, 
+                                      number = 30,
+                                      nSides = 5, sm = T)
+plot(poly_example)
+plot(poly_example1$geometry, add =T, col = "brown")
 }

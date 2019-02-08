@@ -55,8 +55,10 @@ texture <- function(shape, fun_horizont, buffer, ...){
   
   inner_polygon <- st_buffer(pars, buffer) %>% 
     st_intersection(pars)
+  
   if(length(inner_polygon) == 0){
-    stop("Your buffer is bigger than your horizon. This means there is no area where the pattern can be drawn. Try again with a smaller buffer!")
+    stop("Your buffer is bigger than your horizon. 
+         This means there is no area where the pattern can be drawn. Try again with a smaller buffer!")
   }
   out_line <- st_cast(pars, 'MULTILINESTRING', do_split = FALSE)
   

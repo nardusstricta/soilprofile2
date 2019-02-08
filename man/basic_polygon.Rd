@@ -4,14 +4,53 @@
 \alias{basic_polygon}
 \title{basic polygon}
 \usage{
-basic_polygon(polygon, cellsize, square = F)
+basic_polygon(polygon, cellnumber = c(5, 15), square = T)
 }
 \arguments{
-\item{polygon}{A polygon-layer, which has been build by the \link[soilprofile2]{texture} function.}
+\item{polygon}{polygon A Simple Feature or  just  a "sfc_MULTIPOLYGON" or "POLYGON" geometry.}
+
+\item{cellnumber}{integer of length 1 or 2, number of grid cells in x and y direction (columns, rows)}
+
+\item{square}{logical; if FALSE, create hexagonal grid}
 }
 \value{
-A unit polygon (sf) with an parID column
+A multipolygon Simple Feature with an unchanging parID column
 }
 \description{
 This function draws a polygon, with the following  helper fuction \link[sf]{st_make_grid}
+}
+\examples{
+df_example <-  data.frame(name = c(1, 2),
+from1 = c(0,20),
+to1 = c(20, 40)
+)
+
+#Set coordinates, four points on each horizon
+cord_example  <-  cord_setting(df_example, plot_width = 2)
+
+#create a simple feature: Each line represents a horizon
+#with one polygon as geometry.
+sf_example <- sf_polygon(df_geom = cord_example,
+                         df_attri = df_example)
+
+#Modification of the lines:
+lattri_example <- data.frame(name= c(1,2),
+                             numberX = c(2, 5),
+                             sd = c(1,1),
+                             sm = c(TRUE, TRUE)
+)
+
+line_example <- line_mod(df = cord_example,
+                         line_attri = lattri_example)
+#splitting the polygon                          
+
+example_profile <- split_polygon(polygon = sf_example,
+                                 line = line_example)
+
+#Creating a set of smaller polygons in the second horizon 
+
+poly_example1 <- basic_polygon(polygon = example_profile[2,])
+plot(example_profile$geometry)
+plot(poly_example1$geometry, add =T, col = "darkblue")
+
 }

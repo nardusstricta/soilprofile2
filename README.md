@@ -36,8 +36,8 @@ library(ggplot2)
 df_example <-  data.frame(name = c("Ah", "Bv", "C"), 
                           depth = c("0-15", "15-43.4", "43.4-70"), 
                           col = c("7.5YR 2/1","10YR 4/3", "2.5Y 5/3"),
-                          skel_dim= c(".5-1","1-2", "1-2"), 
-                          skel_ab = c(0.2, 0.6, 0.7)) %>% 
+                          skel_dim = c(".5-1","1-2", "2-3"), 
+                          skel_ab = c(0.2, 0.6, 1.9)) %>% 
   data_mod()
 
 #Set coordinates, four points on each horizon 
@@ -112,6 +112,61 @@ smooth_profile %>%
 ```
 
 <img src="README-trasiton-1.png" width="1008" />
+
+### Rock content
+
+We create a new layer for the rock content. Beside the basic information (dimension and abundance) we can add the following parameters:
+
+``` r
+skeleton_mat <- data.frame(
+  name = c(2, 3),
+  nSides = c(5, 20),
+  smooth = c( T, T),
+  union = c( F, T),
+  phi = c( 0, 0),
+  strat = c( F, F), 
+  cellnumber = c(0, 0),
+  rotation = c(0, 0)
+)
+spoint <- skeleton(shape_mod = example_profile, 
+                   skeleton_mat = skeleton_mat)
+#Plot the result:
+smooth_profile %>%
+  ggplot() +
+  geom_sf(fill = smooth_profile$rgb_col) +
+  geom_sf(data = spoint) +
+  soil_theme()
+```
+
+<img src="README-rock-1.png" width="1008" />
+
+### Root
+
+Also for the roots we create an own layer
+
+``` r
+root_example <- random_line(polygon = smooth_profile[1,],
+                            number = 800,
+                            line_length = .5, 
+                            variation = 1,
+                            smoothness = 5)
+smooth_profile %>%
+  ggplot() +
+  geom_sf(fill = smooth_profile$rgb_col) +
+  geom_sf(data = spoint) +
+  geom_sf(data = root_example, size = root_example$id/max(root_example$id), alpha = .3) +
+  soil_theme()
+```
+
+<img src="README-roots-1.png" width="1008" />
+
+### Texture
+
+### Structure
+
+### Soil processes
+
+### PNG import
 
 Contributing
 ------------

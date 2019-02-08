@@ -15,10 +15,10 @@ point_2_polygon <- function(sf_point){
   
   
   xy_cord <- sf_point %>%  #Koordinaten für die Funktion extrahieren:
-    st_coordinates()
+    sf::st_coordinates()
   
-  df_attr <- sf_point
-  st_geometry(df_attr) <- NULL
+  df_attr <- sf_point 
+  sf::st_geometry(df_attr) <- NULL
   
 
   geom <- do.call(
@@ -29,14 +29,14 @@ point_2_polygon <- function(sf_point){
     )
   )
   
-  spoint_poly <- st_sfc(
+  spoint_poly <- sf::st_sfc(
     lapply(
-      1:max(geom[,3]), function(x) st_linestring(geom[geom[,3] == x, 1:2]) %>% 
-        st_cast("POLYGON")
+      1:max(geom[,3]), function(x) sf::st_linestring(geom[geom[,3] == x, 1:2]) %>% 
+        sf::st_cast("POLYGON")
     )
   ) %>% 
-    st_sf(df_attr, geometry = .) %>% 
-    st_buffer(0.0)
+    sf::st_sf(df_attr, geometry = .) %>% 
+    sf::st_buffer(0.0)
 }
 
 
@@ -57,18 +57,6 @@ convex_poly <- function(cord, attr_poly, poly_id){
   if(any(attr_poly$nSides < 3 & attr_poly$nSides > 0)){
     warning("Possibly the polygons are outside the buffer area!")
   }
-  
-  
-  
-
-  # Helperfunction to find the radius of the circumscribed circle, 
-  # and the angle of each point if this was a regular polygon
-  
-
-  #Define parameter: Area size and number of sides 
-
-  
-  
   
   #checking if parameters are available for stratified rock 
   area <- attr_poly$area_size
@@ -108,14 +96,12 @@ convex_poly <- function(cord, attr_poly, poly_id){
   points_list1$x <- points_list1$x * sqrt(area/current_area)
   points_list1$y <- points_list1$y * sqrt(area/current_area)
 
-  p <- data.frame(x = points_list1$x + cord[1], y= points_list1$y + cord[2], name = poly_id) 
+  p <- data.frame(x = points_list1$x + cord[1],
+                  y= points_list1$y + cord[2],
+                  name = poly_id) 
   
   poo <- rbind(p, p[1,])
-  # po2 <- sf::st_linestring(as.matrix(poo)) %>% 
-  #   sf::st_cast('MULTIPOINT') %>% 
-  #   sf::st_cast("POLYGON") %>% 
-  #   sf::st_convex_hull() 
-
+  
   return(as.matrix(poo))
   
 }
