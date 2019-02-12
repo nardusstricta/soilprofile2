@@ -4,7 +4,8 @@
 #' 
 #' @param shape A Simple Features with one row (one geometry). At least with one geometry column and one "nameC" column (C for character)
 #' @param fun_horizont A function that creates a pattern for this specific horizon. 
-#' @param buffer Usually a negative value that indicates the distance between the pattern and the horizon boundary. 
+#' @param buffer Usually a negative value that indicates the distance between the pattern and the horizon boundary.
+#' @param ... is passed on to the specific texture function  
 #' @return This function returns a new Simple Features which
 #'  contains all informations (columns) of the Input Simple Features (shape).
 #'  Columns with the graphic parameters are added. 
@@ -53,22 +54,23 @@ texture <- function(shape, fun_horizont, buffer, ...){
   
   pars <- shape$geometry
   
-  inner_polygon <- st_buffer(pars, buffer) %>% 
-    st_intersection(pars)
+  inner_polygon <- sf::st_buffer(pars, buffer) %>% 
+    sf::st_intersection(pars)
   
   if(length(inner_polygon) == 0){
     stop("Your buffer is bigger than your horizon. 
          This means there is no area where the pattern can be drawn. Try again with a smaller buffer!")
   }
-  out_line <- st_cast(pars, 'MULTILINESTRING', do_split = FALSE)
+  
+  out_line <- sf::st_cast(pars, 'MULTILINESTRING', do_split = FALSE)
   
   
   grid <- fun_horizont(polygon = inner_polygon, ...)
   
-  output_list <- st_sf(par_ID = c(1:(nrow(grid) +1)), 
+  output_list <- sf::st_sf(par_ID = c(1:(nrow(grid) + 1)), 
                        nameC = shape$nameC,
-                       geometry = c(st_geometry(out_line), 
-                                    st_geometry(st_intersection(grid, inner_polygon))
+                       geometry = c(sf::st_geometry(out_line), 
+                                    sf::st_geometry(grid)
                                     )
                        )
 

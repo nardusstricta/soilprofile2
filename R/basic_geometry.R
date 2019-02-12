@@ -2,7 +2,7 @@
 #'
 #' This function draws a set of random lines. The functions were developed primarily to visualise roots. 
 #'
-#' @param polygon A Simple Feature or  just a "sfc_MULTIPOLYGON" or "POLYGON" geometry.
+#' @param polygon A Simple Feature or  just a "sfc_MULTIPOLYGON" or "sfc_POLYGON" geometry.
 #' @param number The number of points from which the lines are to be created (dafault 800)
 #' @param line_length The size of the buffer around each point. All points in this area will be combined to one line. This means if the buffer is larger, the lines become longer on average. 
 #' @param variation The standard deviation of the random factor for the buffer size. Increasing the value will result in different lengths of the lines.
@@ -50,7 +50,7 @@ basic_random_line <- function(polygon,
                               smoothness = 5){
   stopifnot("sf" %in% class(polygon) | 
               "sfc_MULTIPOLYGON" %in% class(polygon) |
-              "POLYGON" %in% class(polygon))
+              "sfc_POLYGON" %in% class(polygon))
   
   point_temp <- sf::st_sample(polygon, number)
   
@@ -67,8 +67,8 @@ basic_random_line <- function(polygon,
   )
   
   erg <- geom %>% 
-    dplyr::group_by(id) %>% 
-    dplyr::filter(length(id) >= 2) %>% 
+    dplyr::group_by_(~ id) %>% 
+    dplyr::filter_( ~ length(id) >= 2) %>% 
     dplyr::summarise(do_union = T) %>% 
     sf::st_cast("LINESTRING") %>%
     smoothr::smooth(method = "ksmooth", smoothness = smoothness)
@@ -79,7 +79,7 @@ basic_random_line <- function(polygon,
 #'
 #' This function draws a set of random polygons.
 #'
-#' @param polygon A Simple Feature polygon or  just a "sfc_MULTIPOLYGON" or "POLYGON" geometry.
+#' @param polygon A Simple Feature polygon or  just a "sfc_MULTIPOLYGON" or "sfc_POLYGON" geometry.
 #' @param size percentage of output area relative to input area 
 #' @param number number of polygons
 #' @param nSides number of polygon sides
@@ -89,22 +89,22 @@ basic_random_line <- function(polygon,
 #' @return A unit multipolygon Simple Feature with one parID column
 #' 
 #' @examples 
-#' poly_example <- sf::st_polygon(list(matrix(c(0,0,10,0,10,10,0,10,0,0),
-#' ncol=2, byrow=TRUE)))
+#' poly_example <- sf::st_sfc(sf::st_polygon(list(matrix(c(0,0,10,0,10,10,0,10,0,0),
+#' ncol=2, byrow=TRUE))))
 #' 
 #' poly_example1 <- basic_random_polygon(polygon = poly_example, 
 #'                                       size = .3, 
 #'                                       number = 30,
-#'                                       nSides = 5, sm = T)
+#'                                       nSides = 5, sm = TRUE)
 #' plot(poly_example)
-#' plot(poly_example1$geometry, add =T, col = "brown")
+#' plot(poly_example1$geometry, add = TRUE, col = "brown")
 #' @export
 
 basic_random_polygon <- function(polygon, size, number, nSides, sm = T, ...){
   
   stopifnot("sf" %in% class(polygon) | 
               "sfc_MULTIPOLYGON" %in% class(polygon) |
-              "POLYGON" %in% class(polygon))
+              "sfc_POLYGON" %in% class(polygon))
   
   area_size <- sf::st_area(polygon) * size/number
   
@@ -132,7 +132,7 @@ basic_random_polygon <- function(polygon, size, number, nSides, sm = T, ...){
 #'
 #' This function draws a polygon, with the following  helper fuction \link[sf]{st_make_grid}
 #'
-#' @param polygon polygon A Simple Feature or  just  a "sfc_MULTIPOLYGON" or "POLYGON" geometry.
+#' @param polygon polygon A Simple Feature or  just  a "sfc_MULTIPOLYGON" or "sfc_POLYGON" geometry.
 #' @param cellnumber integer of length 1 or 2, number of grid cells in x and y direction (columns, rows)
 #' @param square logical; if FALSE, create hexagonal grid
 #' 
@@ -169,14 +169,14 @@ basic_random_polygon <- function(polygon, size, number, nSides, sm = T, ...){
 #' 
 #' poly_example1 <- basic_polygon(polygon = example_profile[2,])
 #' plot(example_profile$geometry)
-#' plot(poly_example1$geometry, add =T, col = "darkblue")
+#' plot(poly_example1$geometry, add = TRUE, col = "darkblue")
 #'
 #' @export
 
 basic_polygon <- function(polygon, cellnumber = c(5, 15), square = T){
   stopifnot("sf" %in% class(polygon) | 
               "sfc_MULTIPOLYGON" %in% class(polygon) |
-              "POLYGON" %in% class(polygon))
+              "sfc_POLYGON" %in% class(polygon))
   
   sf::st_make_grid(polygon, what = "polygons", n = cellnumber,  square = square) %>% 
     sf::st_intersection(polygon) %>% 
@@ -190,7 +190,7 @@ basic_polygon <- function(polygon, cellnumber = c(5, 15), square = T){
 #'
 #' This function draws a set of regular lines, with the following helper fuction \link[sf]{st_make_grid}
 #'
-#' @param polygon polygon A Simple Feature or  just  a "sfc_MULTIPOLYGON" or "POLYGON" geometry.
+#' @param polygon polygon A Simple Feature or  just  a "sfc_MULTIPOLYGON" or "sfc_POLYGON" geometry.
 #' @param rotation The angle of the line
 #' @param cellnumber integer of length 1 or 2, number of grid cells in x and y direction (columns, rows)
 #' @return A unit multiline Simple Feature  with a parID column
@@ -228,8 +228,8 @@ basic_polygon <- function(polygon, cellnumber = c(5, 15), square = T){
 #' 
 #' #plotting
 #' plot(example_profile$geometry)
-#' plot(poly_example1$geometry, add =T, col = "darkblue")
-#' plot(poly_example2$geometry, add =T, col = "darkred")
+#' plot(poly_example1$geometry, add =TRUE, col = "darkblue")
+#' plot(poly_example2$geometry, add =TRUE, col = "darkred")
 #' 
 #'
 #' @export
@@ -240,7 +240,7 @@ basic_line <- function(polygon, cellnumber = c(1, 10), rotation = 45){
   
   stopifnot("sf" %in% class(polygon) | 
               "sfc_MULTIPOLYGON" %in% class(polygon) |
-              "POLYGON" %in% class(polygon))
+              "sfc_POLYGON" %in% class(polygon))
   
   rotang <- rotation
   
@@ -251,7 +251,7 @@ basic_line <- function(polygon, cellnumber = c(1, 10), rotation = 45){
   inpoly <- polygon %>% 
     sf::st_geometry()
   
-  center <- sf::st_centroid(st_union(inpoly))
+  center <- sf::st_centroid(sf::st_union(inpoly))
   
   grd <- sf::st_make_grid(tran(geo = inpoly, ang = -rotang, center = center), 
                           n = cellnumber)
@@ -271,7 +271,7 @@ basic_line <- function(polygon, cellnumber = c(1, 10), rotation = 45){
 #'
 #' This function draws a random pointlayer, with the following helper fuction \link[sf]{st_sample}
 #'
-#' @param polygon polygon A Simple Feature or  just  a "sfc_MULTIPOLYGON" or "POLYGON" geometry.
+#' @param polygon polygon A Simple Feature or  just  a "sfc_MULTIPOLYGON" or "sfc_POLYGON" geometry.
 #' @param size  sample size(s) requested; either total size, or a numeric vector with sample sizes for each feature geometry. When sampling polygons, the returned sampling size may differ from the requested size, as the bounding box is sampled, and sampled points intersecting the polygon are returned.
 #' @return A unit point Simple Feature with an parID column
 #' @examples 
@@ -306,7 +306,7 @@ basic_line <- function(polygon, cellnumber = c(1, 10), rotation = 45){
 #' #plotting
 #' 
 #' plot(example_profile$geometry)
-#' plot(poly_example1$geometry, add =T, col = "darkblue")
+#' plot(poly_example1$geometry, add =TRUE, col = "darkblue")
 #' 
 #'
 #' @export
@@ -315,7 +315,7 @@ basic_random_point <- function(polygon, size = 12){
   
   stopifnot("sf" %in% class(polygon) | 
               "sfc_MULTIPOLYGON" %in% class(polygon) |
-              "POLYGON" %in% class(polygon))
+              "sfc_POLYGON" %in% class(polygon))
   
     sf::st_sample(polygon, size = size) %>% 
     sf::st_intersection(polygon) %>% 
@@ -327,7 +327,7 @@ basic_random_point <- function(polygon, size = 12){
 #'
 #' This function draws a regular pointlayer, with the following helperfuction \link[sf]{st_make_grid}
 #'
-#' @param polygon polygon A Simple Feature or  just  a "sfc_MULTIPOLYGON" or "POLYGON" geometry.
+#' @param polygon polygon A Simple Feature or  just  a "sfc_MULTIPOLYGON" or "sfc_POLYGON" geometry.
 #' @param rotation the angle of the point
 #' @param cellnumber integer of length 1 or 2, number of grid cells in x and y direction (columns, rows)
 #' @return A unit point Simple Feature  with a parID column
@@ -370,8 +370,8 @@ basic_random_point <- function(polygon, size = 12){
 #' 
 #' 
 #' plot(example_profile$geometry)
-#' plot(poly_example1$geometry, add =T, col = "darkblue")
-#' plot(poly_example2$geometry, add =T, col = "darkred")
+#' plot(poly_example1$geometry, add =TRUE, col = "darkblue")
+#' plot(poly_example2$geometry, add =TRUE, col = "darkred")
 #' 
 #' @export
 
@@ -379,7 +379,7 @@ basic_regular_point <- function(polygon, cellnumber = c(10, 10), rotation = 45){
   
   stopifnot("sf" %in% class(polygon) | 
               "sfc_MULTIPOLYGON" %in% class(polygon) |
-              "POLYGON" %in% class(polygon))
+              "sfc_POLYGON" %in% class(polygon))
   
   rotang <- rotation
   rot <- function(a) matrix(c(cos(a), sin(a), -sin(a), cos(a)), 2, 2)
@@ -388,7 +388,7 @@ basic_regular_point <- function(polygon, cellnumber = c(10, 10), rotation = 45){
   inpoly <- polygon %>% 
     sf::st_geometry()
   
-  center <- sf::st_centroid(st_union(inpoly))
+  center <- sf::st_centroid(sf::st_union(inpoly))
   
   grd <- sf::st_make_grid(tran(geo = inpoly, ang = -rotang, center = center),
                           what = "centers", square = TRUE, n = cellnumber) %>% 

@@ -8,6 +8,8 @@ Bv(polygon, ...)
 }
 \arguments{
 \item{polygon}{A polygon-layer, which has been build by the \link[soilprofile2]{texture} function.}
+
+\item{...}{ignored}
 }
 \value{
 A unit sf layer with an parID column

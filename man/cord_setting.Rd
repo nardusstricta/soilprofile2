@@ -19,12 +19,10 @@ This function returns a dataframe with four coordinates for each horizon. Additi
 This function sets four coordinates (x and y) for each horizon. This makes it easy to calculate a polygon. e.g. as Simple Features
 }
 \examples{
-data_example <- data.frame(name = c(1, 2),
-from1 = c(0,20),
-to1 = c(20, 40)
-)
+data_example <- data.frame(name = c(1, 2), 
+                           from1 = c(0,20), 
+                           to1 = c(20, 40))
 
 cord_example <- cord_setting(data_example, plot_width = 3)
 print(cord_example)
-
 }

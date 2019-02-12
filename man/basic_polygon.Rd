@@ -7,7 +7,7 @@
 basic_polygon(polygon, cellnumber = c(5, 15), square = T)
 }
 \arguments{
-\item{polygon}{polygon A Simple Feature or  just  a "sfc_MULTIPOLYGON" or "POLYGON" geometry.}
+\item{polygon}{polygon A Simple Feature or  just  a "sfc_MULTIPOLYGON" or "sfc_POLYGON" geometry.}
 
 \item{cellnumber}{integer of length 1 or 2, number of grid cells in x and y direction (columns, rows)}
 
@@ -51,6 +51,6 @@ example_profile <- split_polygon(polygon = sf_example,
 
 poly_example1 <- basic_polygon(polygon = example_profile[2,])
 plot(example_profile$geometry)
-plot(poly_example1$geometry, add =T, col = "darkblue")
+plot(poly_example1$geometry, add = TRUE, col = "darkblue")
 
 }

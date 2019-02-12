@@ -7,7 +7,7 @@
 basic_random_polygon(polygon, size, number, nSides, sm = T, ...)
 }
 \arguments{
-\item{polygon}{A Simple Feature polygon or  just a "sfc_MULTIPOLYGON" or "POLYGON" geometry.}
+\item{polygon}{A Simple Feature polygon or  just a "sfc_MULTIPOLYGON" or "sfc_POLYGON" geometry.}
 
 \item{size}{percentage of output area relative to input area}
 
@@ -26,13 +26,13 @@ A unit multipolygon Simple Feature with one parID column
 This function draws a set of random polygons.
 }
 \examples{
-poly_example <- sf::st_polygon(list(matrix(c(0,0,10,0,10,10,0,10,0,0),
-ncol=2, byrow=TRUE)))
+poly_example <- sf::st_sfc(sf::st_polygon(list(matrix(c(0,0,10,0,10,10,0,10,0,0),
+ncol=2, byrow=TRUE))))
 
 poly_example1 <- basic_random_polygon(polygon = poly_example, 
                                       size = .3, 
                                       number = 30,
-                                      nSides = 5, sm = T)
+                                      nSides = 5, sm = TRUE)
 plot(poly_example)
-plot(poly_example1$geometry, add =T, col = "brown")
+plot(poly_example1$geometry, add = TRUE, col = "brown")
 }

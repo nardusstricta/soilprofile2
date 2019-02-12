@@ -8,7 +8,7 @@ basic_random_line(polygon, number = 300, line_length = 0.8,
   variation = 1, smoothness = 5)
 }
 \arguments{
-\item{polygon}{A Simple Feature or  just a "sfc_MULTIPOLYGON" or "POLYGON" geometry.}
+\item{polygon}{A Simple Feature or  just a "sfc_MULTIPOLYGON" or "sfc_POLYGON" geometry.}
 
 \item{number}{The number of points from which the lines are to be created (dafault 800)}
 

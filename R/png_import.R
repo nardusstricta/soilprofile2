@@ -4,8 +4,9 @@
 #' 
 #' 
 #' 
-#' @param path a numeric value between 1 and 6 calling the stored L-system
-#' @param mod_sf A layer with the skeleton content as polygon (bei fehlen gibt es noch einen Fehler)
+#' @param shape_temp a numeric value between 1 and 6 calling the stored L-system
+#' @param path_temp A layer with the skeleton content as polygon (bei fehlen gibt es noch einen Fehler)
+#' @param ... is passed to function \link[soilprofile2]{png_import}
 #' @export 
 #' 
 
@@ -14,7 +15,7 @@ multiple_png <- function(shape_temp, path_temp, ...){
   geom1 <- do.call(
     rbind, lapply(
       1:nrow(shape_temp), function(i){
-        raster2polygon(file_path = path_temp[i], horizont = shape_temp[i,], ...)
+        png_import(file_path = path_temp[i], horizont = shape_temp[i,], ...)
       }
     )
   )
@@ -28,8 +29,10 @@ multiple_png <- function(shape_temp, path_temp, ...){
 #' 
 #' 
 #' 
-#' @param path a numeric value between 1 and 6 calling the stored L-system
-#' @param mod_sf A layer with the skeleton content as polygon (bei fehlen gibt es noch einen Fehler)
+#' @param file_path a numeric value between 1 and 6 calling the stored L-system
+#' @param horizont A layer with the skeleton content as polygon (bei fehlen gibt es noch einen
+#' @param smoothness passed to the smoothr function
+#' @param raster2polygon an integer if the raster geometry shoud be transform to an vector polygon 
 #' @export 
 #' 
 png_import <- function(file_path, horizont, smoothness, raster2polygon = T){

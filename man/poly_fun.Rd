@@ -7,10 +7,12 @@
 poly_fun(nSides, area)
 }
 \arguments{
-\item{nSides}{A simple feature with at least the following parameter as colnames:}
+\item{nSides}{number of sides}
+
+\item{area}{the area of the polygon}
 }
 \value{
-A sf polygon layer with one line for each input point
+A list with the x and y coordinates
 }
 \description{
 This function builds polygons with given area and number of sides. The starting point is one of the corner points of the polygon. 

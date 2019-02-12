@@ -17,6 +17,8 @@ smooth_trans(lmod, shape_mod, attr_df, shape = 10, seed = 33,
 \item{shape}{The parameter to define the area for the polygon. The smaller it is, the smaller is the area. In addition, the distribution is skewed.}
 
 \item{seed}{Seed setting for reproducible results}
+
+\item{smoothness}{is passed to function \link[smoothr]{smooth_ksmooth} ; a parameter controlling the bandwidth of the Gaussian kernel, and therefore the smoothness and level of generalization. By default, the bandwidth is chosen as the mean distance between adjacent points. The smoothness parameter is a multiplier of this chosen bandwidth, with values greater than 1 yielding more highly smoothed and generalized features and values less than 1 yielding less smoothed and generalized features.}
 }
 \value{
 A simple feature with one line per horizon and the attributes from the input polygon

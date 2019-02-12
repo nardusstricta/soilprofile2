@@ -7,9 +7,13 @@
 png_import(file_path, horizont, smoothness, raster2polygon = T)
 }
 \arguments{
-\item{path}{a numeric value between 1 and 6 calling the stored L-system}
+\item{file_path}{a numeric value between 1 and 6 calling the stored L-system}
 
-\item{mod_sf}{A layer with the skeleton content as polygon (bei fehlen gibt es noch einen Fehler)}
+\item{horizont}{A layer with the skeleton content as polygon (bei fehlen gibt es noch einen}
+
+\item{smoothness}{passed to the smoothr function}
+
+\item{raster2polygon}{an integer if the raster geometry shoud be transform to an vector polygon}
 }
 \description{
 sourse sollte noch angepasst werden, evt dropbox oder db

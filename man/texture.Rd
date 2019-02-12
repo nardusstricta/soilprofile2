@@ -12,6 +12,8 @@ texture(shape, fun_horizont, buffer, ...)
 \item{fun_horizont}{A function that creates a pattern for this specific horizon.}
 
 \item{buffer}{Usually a negative value that indicates the distance between the pattern and the horizon boundary.}
+
+\item{...}{is passed on to the specific texture function}
 }
 \value{
 This function returns a new Simple Features which

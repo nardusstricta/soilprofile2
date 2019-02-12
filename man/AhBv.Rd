@@ -8,10 +8,12 @@ AhBv(polygon, ...)
 }
 \arguments{
 \item{polygon}{A polygon-layer, which has been build by the \link[soilprofile2]{texture} function.}
+
+\item{...}{ignored}
 }
 \value{
 A unit sf layer with an parID column
 }
 \description{
-This function draws a AhBv pattern, with the following  helper fuctions: \link[soilprofile2]{basic_line}, \link[soilprofile2]{basic_random_polygon}, \link[soilprofile2]{basic_point}
+This function draws a AhBv pattern, with the following  helper fuctions: \link[soilprofile2]{basic_line}, \link[soilprofile2]{basic_random_polygon}, \link[soilprofile2]{basic_regular_point}
 }

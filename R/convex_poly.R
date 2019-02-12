@@ -5,7 +5,7 @@
 #' @param sf_point A simple feature with at least the following parameter as colnames: 
 #'  
 #' @return A sf polygon layer with one line for each input point 
-#' @export
+
 
 point_2_polygon <- function(sf_point){
   
@@ -45,14 +45,16 @@ point_2_polygon <- function(sf_point){
 #'
 #' This function builds polygons with given area and number of sides. The starting point is one of the corner points of the polygon. 
 #' 
-#' @param data A simple feature with at least the following parameter as colnames: 
+#' @param cord A numeric vector with the point coordinates specifying the position of the polygon. 
 #'  
-#' @return A sf polygon layer with one line for each input point 
-#' @export
+#' @param attr_poly the parameters described in function \link[soilprofile2]{skeleton}  
+#' @param poly_id an id ...
+#' @return a matrix with the x and y coordinates and an id for each polygon 
+
 
 convex_poly <- function(cord, attr_poly, poly_id){
   stopifnot("numeric" == class(cord))
-  stopifnot(colnames(data) %in% "data.frame")
+  
   
   if(any(attr_poly$nSides < 3 & attr_poly$nSides > 0)){
     warning("Possibly the polygons are outside the buffer area!")
@@ -114,9 +116,9 @@ convex_poly <- function(cord, attr_poly, poly_id){
 #' The area (A) of a convex polygon can be found with the following formula  
 #' \eqn{A = 1/2 * [(x1*y2 + x2*y3 + ... + xn*y1) - (y1*x2 + y2*x3 + ... + yn*x1)]}
 #' 
-#' @param nSides A simple feature with at least the following parameter as colnames: 
-#'  
-#' @return A sf polygon layer with one line for each input point 
+#' @param nSides number of sides  
+#' @param area the area of the polygon
+#' @return A list with the x and y coordinates
 #' @export
 
 poly_fun <- function(nSides, area){

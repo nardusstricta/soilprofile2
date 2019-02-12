@@ -7,7 +7,7 @@
 basic_random_point(polygon, size = 12)
 }
 \arguments{
-\item{polygon}{polygon A Simple Feature or  just  a "sfc_MULTIPOLYGON" or "POLYGON" geometry.}
+\item{polygon}{polygon A Simple Feature or  just  a "sfc_MULTIPOLYGON" or "sfc_POLYGON" geometry.}
 
 \item{size}{sample size(s) requested; either total size, or a numeric vector with sample sizes for each feature geometry. When sampling polygons, the returned sampling size may differ from the requested size, as the bounding box is sampled, and sampled points intersecting the polygon are returned.}
 }
@@ -49,7 +49,7 @@ poly_example1 <- basic_random_point(polygon = example_profile[2,],  size = 80)
 #plotting
 
 plot(example_profile$geometry)
-plot(poly_example1$geometry, add =T, col = "darkblue")
+plot(poly_example1$geometry, add =TRUE, col = "darkblue")
 
 
 }

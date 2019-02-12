@@ -21,27 +21,26 @@
 #' 
 #' print(data_mod(data_example))
 #' @export
-#' @importFrom tidyr separate gather
-#' @importFrom aqp munsell2rgb
-#' @importFrom magrittr "%>%"
-#' @importFrom lwgeom st_split
 
 
 data_mod <- function(df_org){
+  #depth = to1 = from1 = NULL
   stopifnot("data.frame" %in% class(df_org))
   stopifnot(c("depth", "name", "skel_dim", "col") %in% colnames(df_org))
+  
   df_org %>% 
-    tidyr::separate(depth, c("from1", "to1"), "-") %>% 
-    dplyr::mutate(nameC = name) %>%
-    dplyr::mutate(name = 1:nrow(df_org)) %>%
-    dplyr::mutate(from1 = as.numeric(from1)) %>% 
-    dplyr::mutate(to1 = as.numeric(to1)) %>%
-    tidyr::separate(skel_dim, c("skel_dim_from", "skel_dim_to"), "-", convert = T) %>% 
-    tidyr::separate(col, c("hue_col", "temp"), " ") %>% 
-    tidyr::separate(temp, c("value_col", "chroma_col"), "/") %>% 
+    tidyr::separate_("depth", c("from1", "to1"), "-") %>% 
+    dplyr::mutate_(nameC = ~ name) %>%
+    dplyr::mutate_(name = ~ 1:nrow(df_org)) %>%
+    dplyr::mutate_(from1 = ~ as.numeric(from1)) %>% 
+    dplyr::mutate_(to1 = ~ as.numeric(to1)) %>%
+    tidyr::separate_("skel_dim",
+                     c("skel_dim_from", "skel_dim_to"), "-", convert = T) %>% 
+    tidyr::separate_("col", c("hue_col", "temp"), " ") %>% 
+    tidyr::separate_("temp", c("value_col", "chroma_col"), "/") %>% 
     ##munsell::mnsl("5Y 5/3") not run error: some colours have chromas that are not multiples of two:
-    dplyr::mutate(value_col = as.numeric(value_col)) %>% 
-    dplyr::mutate(chroma_col = as.numeric(chroma_col)) %>% 
-    dplyr::mutate(rgb_col = aqp::munsell2rgb(hue_col, value_col, chroma_col))
+    dplyr::mutate_(value_col = ~ as.numeric(value_col)) %>% 
+    dplyr::mutate_(chroma_col = ~ as.numeric(chroma_col)) %>% 
+    dplyr::mutate_(rgb_col = ~ aqp::munsell2rgb(hue_col, value_col, chroma_col))
   
 }

@@ -7,19 +7,19 @@
 line_mod(df_geom, line_attri, seed = 33)
 }
 \arguments{
+\item{df_geom}{A long table with the columns named "name", "x" and "y" (Id and coordinates) for each horizont. For example created by the \link[soilprofile2]{cord_setting} function}
+
 \item{line_attri}{A datan frame with the information about the lines which divide the horizons. 
 The following columns must exist:
 \enumerate{
   \item The horizon Id must be given in a numeric column named "name"
   \item The number of X points, which should deviate the line from a straight line, must be given in a numeric column named: "numberX"
   \item The distance between the X points and the straight line must be given in a numeric column named: "sd". 
-  The values are calculated using the \link[base]{rnorm} function. The mean value is given by the X-value of the straight horizon line. And the standard deviation can be selected individually. 
+  The values are calculated using the \link[stats]{rnorm} function. The mean value is given by the X-value of the straight horizon line. And the standard deviation can be selected individually. 
   \item The column named "sm" can be used as a logical value to specify whether the horizon transition should be smoothed. This is done with the function \link[smoothr]{smooth}.
 }}
 
 \item{seed}{For replicable examples a seed can be set here}
-
-\item{df_geom_geom}{A long table with the columns named "name", "x" and "y" (Id and coordinates) for each horizont. For example created by the \link[soilprofile2]{cord_setting} function}
 }
 \value{
 This function returns a linestring simple feature. Each line represents the upper horizontal limit of the corresponding id.
@@ -46,7 +46,7 @@ lattri_example <- data.frame(name= unique(cord_example$name),
 )
 
 ## Apply the line_mod fuction
-line_example <- line_mod(df = cord_example, line_attri = lattri_example)
+line_example <- line_mod(df_geom = cord_example, line_attri = lattri_example)
 
 ## Plot simple feature geometry
 plot(line_example$geometry)

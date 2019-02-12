@@ -12,7 +12,7 @@ skeleton(shape_mod, skeleton_mat)
 \item{skeleton_mat}{A data frame with the following parameters (as column names) for specifying the rock form:  "name", "nSides", "smooth", "union", "phi", "strat", "cellnumber", "rotation"}
 }
 \value{
-This function returns 12 X-value. 10 of this are new generatet by the \link[base]{runif}  Funktion. If a parameter is unknown set 0 or NA in the cell.
+This function returns 12 X-value. 10 of this are new generatet by the \link[stats]{runif}  Funktion. If a parameter is unknown set 0 or NA in the cell.
 }
 \description{
 generates new layer for the soil skeleton

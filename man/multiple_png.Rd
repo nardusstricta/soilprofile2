@@ -7,9 +7,11 @@
 multiple_png(shape_temp, path_temp, ...)
 }
 \arguments{
-\item{path}{a numeric value between 1 and 6 calling the stored L-system}
+\item{shape_temp}{a numeric value between 1 and 6 calling the stored L-system}
 
-\item{mod_sf}{A layer with the skeleton content as polygon (bei fehlen gibt es noch einen Fehler)}
+\item{path_temp}{A layer with the skeleton content as polygon (bei fehlen gibt es noch einen Fehler)}
+
+\item{...}{is passed to function \link[soilprofile2]{png_import}}
 }
 \description{
 sourse sollte noch angepasst werden, evt dropbox oder db

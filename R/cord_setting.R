@@ -9,30 +9,35 @@
 #' @return This function returns a dataframe with four coordinates for each horizon. Additionally a column with the ID, which can be joind to the source data 
 #'
 #' @examples 
-#' data_example <- data.frame(name = c(1, 2),
-#' from1 = c(0,20),
-#' to1 = c(20, 40)
-#' )
+#' data_example <- data.frame(name = c(1, 2), 
+#'                            from1 = c(0,20), 
+#'                            to1 = c(20, 40))
 #' 
 #' cord_example <- cord_setting(data_example, plot_width = 3)
 #' print(cord_example)
-#' 
 #' @export
+
+
 cord_setting <- function(df, plot_width = 3){
+  
+  stopifnot("data.frame" %in% class(df))
+  stopifnot(c("from1", "to1", "name") %in% colnames(df))
+  
   broad  <- max(df$to1)/plot_width #Setting the width 
+  
   df_select <- df %>% 
-    dplyr::select(from1, to1, name) %>% 
+    dplyr::select_(~ from1, ~ to1, ~ name) %>% 
     dplyr::mutate(x1 = 0) %>% 
-    dplyr::mutate(y1 = -from1) %>% 
-    dplyr::mutate(x2 = broad) %>% 
-    dplyr::mutate(y2 = -from1) %>% 
-    dplyr::mutate(x3 = broad) %>% 
-    dplyr::mutate(y3 = -to1) %>% 
+    dplyr::mutate_(y1 = ~ -from1) %>% 
+    dplyr::mutate_(x2 = ~ broad) %>% 
+    dplyr::mutate_(y2 = ~ -from1) %>% 
+    dplyr::mutate_(x3 = ~ broad) %>% 
+    dplyr::mutate_(y3 = ~ -to1) %>% 
     dplyr::mutate(x4 = 0) %>% 
-    dplyr::mutate(y4 = -to1) %>% 
+    dplyr::mutate_(y4 = ~ -to1) %>% 
     dplyr::mutate(x5 = 0) %>% 
-    dplyr::mutate(y5 = -from1) %>% 
-    dplyr::select(-from1, -to1)
+    dplyr::mutate_(y5 = ~ -from1) %>% 
+    dplyr::select_(~ -from1, ~ -to1)
   
   df_gatherY <- df_select %>% 
     dplyr::select(-seq(2,10,2)) %>% 

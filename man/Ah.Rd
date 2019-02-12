@@ -8,10 +8,12 @@ Ah(polygon, ...)
 }
 \arguments{
 \item{polygon}{A polygon-layer, which has been build by the \link[soilprofile2]{texture} function.}
+
+\item{...}{ignored}
 }
 \value{
 A unit sf layer with an parID column
 }
 \description{
-This function draws a Ah pattern, with the following  helper fuction \link[soilprofile2]{basic_point}
+This function draws a Ah pattern, with the following  helper fuction \link[soilprofile2]{basic_regular_point}
 }

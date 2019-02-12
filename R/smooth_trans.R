@@ -6,6 +6,7 @@
 #' @param shape_mod A simple feature polygon layer with one line for each horizon. For example, created by the function \link[soilprofile2]{sf_polygon}  or \link[soilprofile2]{split_polygon} 
 #' @param attr_df Attribute table with the following parameters for the horizon transitions: "buffer_size" To what extent should the transition extend into the neighboring horizon? "buffer_number" How many polygons should lie in the neighboring horizon? "nSides" How many sides should the polygons have? "rate" The area size of the polygons is drawn from a gamma distribution. The "rate" parameter required for this can be set individually for each horizon. "name" The horizon id as number
 #' @param shape The parameter to define the area for the polygon. The smaller it is, the smaller is the area. In addition, the distribution is skewed.
+#' @param smoothness is passed to function \link[smoothr]{smooth_ksmooth} ; a parameter controlling the bandwidth of the Gaussian kernel, and therefore the smoothness and level of generalization. By default, the bandwidth is chosen as the mean distance between adjacent points. The smoothness parameter is a multiplier of this chosen bandwidth, with values greater than 1 yielding more highly smoothed and generalized features and values less than 1 yielding less smoothed and generalized features.
 #' @param seed Seed setting for reproducible results 
 #'
 #' @return A simple feature with one line per horizon and the attributes from the input polygon 
@@ -80,17 +81,17 @@ smooth_trans <- function(lmod, shape_mod, attr_df,  shape = 10, seed = 33, smoot
   
   
   attr_default <- shape_mod
-  st_geometry(attr_default) <- NULL 
+  sf::st_geometry(attr_default) <- NULL 
   
   ##
   #select geometrys
   ##
 
   shape_mod <- shape_mod %>%
-    dplyr::select(name)
+    dplyr::select_(~name, ~geometry)
 
   df_line <- lmod %>% 
-    dplyr::select(name)
+    dplyr::select_(~name, ~geometry)
   
   ##
   #Use polygons to create a smooth transition:
@@ -101,23 +102,24 @@ smooth_trans <- function(lmod, shape_mod, attr_df,  shape = 10, seed = 33, smoot
   ##
   df_buffer <- df_line %>% 
     dplyr::right_join(df, by = "name") %>% 
-    dplyr::group_by(name) %>% 
+    #dplyr::group_by_(~name) %>% 
     sf::st_buffer(dist = df$buffer_size, endCapStyle = "FLAT") %>% 
-    dplyr::filter(buffer_size != 0) %>%
+    dplyr::filter_("buffer_size" != 0) %>%
     sf::st_intersection(shape_mod) %>% 
-    dplyr::select(name, nSides, rate, buffer_number) 
+    dplyr::select_(~name, ~nSides, ~rate, ~buffer_number) 
+  
   ##
   #Distribute points on the buffer:
   ##
   set.seed(seed)
-  df_sample  <- sf::st_sample(df_buffer, size= df_buffer$buffer_number)
+  df_sample  <- sf::st_sample(df_buffer, size = df_buffer$buffer_number)
   df_inter <-  sf::st_intersection(df_buffer, df_sample) 
   ##
   #create the polygone: 
   ##
   temp0 <- df_inter %>% 
-    dplyr::group_by(name) %>% 
-    dplyr::mutate(area_size = rgamma(n(), shape = shape, rate = max(rate))) %>% 
+    dplyr::group_by_(~name) %>% 
+    dplyr::mutate_(area_size = ~rgamma(n(), shape = shape, rate = max(rate))) %>% 
     dplyr::ungroup()
 
   temp1 <- point_2_polygon(temp0)
@@ -152,9 +154,9 @@ smooth_trans <- function(lmod, shape_mod, attr_df,  shape = 10, seed = 33, smoot
     #clean cut 
     temp_int <- temp1 %>% 
       dplyr::rowwise() %>% 
-      dplyr::mutate(int = if_else(any(st_intersects(geometry, df_line, sparse = F)) == T, T, F)) %>%
+      dplyr::mutate_(int = ~ dplyr::if_else(any(sf::st_intersects(geometry, df_line, sparse = F)) == T, T, F)) %>%
       sf::st_sf() %>% 
-      dplyr::select(name, int)
+      dplyr::select_(~name, ~int)
     
     ##
     #Resolving the polygons lying on the border 
@@ -162,32 +164,32 @@ smooth_trans <- function(lmod, shape_mod, attr_df,  shape = 10, seed = 33, smoot
     
     #Select all polygons on the border 
     temp2 <- temp_int %>% 
-      dplyr::filter(int == T) %>% 
-      dplyr::select(name) %>%
-      dplyr::group_by(name) %>% 
+      dplyr::filter_("int" == T) %>% 
+      dplyr::select_(~name) %>%
+      dplyr::group_by_(~name) %>% 
       dplyr::summarise(do_union = F) %>% 
       sf::st_buffer(0.0) %>% 
-      sf::st_intersection(st_union(shape_mod)) 
+      sf::st_intersection(sf::st_union(shape_mod)) 
     
-    shape_mod1 <- sf::st_difference(shape_mod, st_combine(temp2)) %>% 
-      dplyr::select(name) %>% 
+    shape_mod1 <- sf::st_difference(shape_mod, sf::st_combine(temp2)) %>% 
+      dplyr::select_(~name) %>% 
       rbind(temp2) %>%   
-      dplyr::group_by(name) %>% 
+      dplyr::group_by_(~name) %>% 
       dplyr::summarise(do_union = T) 
 
 #2. and  all others 
     temp3 <- temp_int %>% 
-      dplyr::filter(int == F) %>% 
-      dplyr::select(name) %>%
-      dplyr::group_by(name) %>% 
+      dplyr::filter_("int" == F) %>% 
+      dplyr::select_(~name) %>%
+      dplyr::group_by_(~name) %>% 
       dplyr::summarise(do_union = F) %>% 
       sf::st_buffer(0.0) %>% 
-      sf::st_intersection(st_union(shape_mod1))
+      sf::st_intersection(sf::st_union(shape_mod1))
 
-    shape_mod2 <- st_difference(shape_mod1, st_combine(temp3)) %>% 
-      dplyr::select(name) %>% 
+    shape_mod2 <- sf::st_difference(shape_mod1, sf::st_combine(temp3)) %>% 
+      dplyr::select_(~name) %>% 
       rbind(temp3) %>%   
-      dplyr::group_by(name) %>% 
+      dplyr::group_by_(~name) %>% 
       dplyr::summarise(do_union = FALSE) %>% 
       dplyr::left_join(attr_default, by = "name")
     

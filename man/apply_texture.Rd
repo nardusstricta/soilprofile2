@@ -4,23 +4,14 @@
 \alias{apply_texture}
 \title{This is a wrapper function which applies the texture function}
 \usage{
-apply_texture(shape, buffer = -1)
+apply_texture(shape, buffer = -1, background = "random")
 }
 \arguments{
-\item{shape}{A Simple Features with one row for each hoizon. At least with one geometry column and one "nameC" column (C for character)}
+\item{shape}{A Simple Features with one row for each hoizon. At least with one geometry column and one "nameC" column ("C" for character)}
 
 \item{buffer}{Usually a negative value that indicates the distance between the pattern and the horizon boundary.}
 
-\item{fun_list}{A tibble with a name column that contains as many horizon 
-shortcuts as possible and a column with the corresponding functions that create a pattern.
- An example tibble, which can be extended with the function \link[soilprofile2]{save_horizont_fun},
- is stored in the package (data("fun_list"))}
-
-\item{df_par_wide}{A tibble with the graphical parameters in wide format. 
-The key to join the tables is the "name" column and the "par_Id" column. 
-The "par_Id" column starts with one for the background layer and then ascends to the top layer. 
-An example tibble, which can be extended with the function \link[soilprofile2]{save_par_setting},
-is stored in the package (data("df_par_wide"))}
+\item{background}{whether the points should have a background (only if grain_size information exists). Either a string with 0 and 1 or the default "random", then the values are selected randomly.}
 }
 \value{
 This function returns a new Simple Features which
@@ -34,38 +25,50 @@ A list of functions is stored in the package.
  These functions represent specific patterns for each horizon 
  and are named according to the horizons. 
  
+ df_par_wide is a tibble with the graphical parameters in wide format (saved in the sys.data). 
+ The key to join the tables is the "name" column and the "par_Id" column. 
+ The "par_Id" column starts with one for the background layer and then ascends to the top layer. 
+ An example tibble, which can be extended with the function \link[soilprofile2]{save_par_setting},
+ is stored in the package (data("df_par_wide"))
+ 
  The actual task is to link the horizon rows to the corresponding functions and 
  then apply these functions
  
- If a horizonname do not matched a Function it 
- will be used the \link[soilprofile2]{build_random_pattern} function
+ If a horizonname do not matched it 
+ will be used the \link[soilprofile2]{random_line_pattern} function
 }
 \examples{
-
 library(dplyr)
-library(sf)
-## Example data with two horizont (Ah + Bv)
-df_example <- data.frame(x = c(0, 20, 20, 0, 0), 
-y = c(0, 0, 20, 20,0),
-nameC = rep("Ah", 5)) \%>\%
-rbind(data.frame(x = c(0, 20, 20, 0, 0), 
-y = c(20, 20, 50, 50,20),
-nameC = rep("Bv", 5))
-)
+library(soilprofile2)
+library(ggplot2)
 
-## Build an Simple Features
-shape_example <- df_example \%>\%
-st_as_sf(coords = c("x", "y")) \%>\% 
-group_by(nameC) \%>\%
-summarise(do_union = FALSE) \%>\%
-st_cast("POLYGON") \%>\%
-st_cast("MULTIPOLYGON")
+#create an example dataset and modify the color and depths 
+df_example <-  data.frame(name = c("Ah", "AhBv", "Bv"), 
+                          depth = c("0-15", "15-43.4", "43.4-70"), 
+                          col = c("7.5YR 2/1","10YR 4/3", "2.5Y 5/3"),
+                          skel_dim = c(".5-1","1-2", "2-3"), 
+                          skel_ab = c(0.2, 0.6, 1.9)) \%>\% 
+  data_mod()
+
+#Set coordinates, four points on each horizon 
+cord_example  <-  cord_setting(df_example, plot_width = 2)
+
+#create a simple feature: Each line represents a horizon 
+#with one polygon as geometry.
+sf_example <- sf_polygon(df_geom = cord_example,
+                         df_attri = df_example)
+
 ## Creation of the patterns
-texture_example <- apply_texture(shape = shape_example, buffer = -1.3) 
+texture_example <- apply_texture(shape = sf_example,
+                                 buffer = -1.3)
 
 ## Plotting Data
 library(ggplot2)
-texture_example \%>\% ggplot() + geom_sf()
+texture_example \%>\%
+  ggplot() +
+  geom_sf() +
+  soil_theme()
+
 }
 \author{
 Gabriel Holz

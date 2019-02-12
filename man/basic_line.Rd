@@ -7,7 +7,7 @@
 basic_line(polygon, cellnumber = c(1, 10), rotation = 45)
 }
 \arguments{
-\item{polygon}{polygon A Simple Feature or  just  a "sfc_MULTIPOLYGON" or "POLYGON" geometry.}
+\item{polygon}{polygon A Simple Feature or  just  a "sfc_MULTIPOLYGON" or "sfc_POLYGON" geometry.}
 
 \item{cellnumber}{integer of length 1 or 2, number of grid cells in x and y direction (columns, rows)}
 
@@ -53,8 +53,8 @@ poly_example2 <- basic_line(polygon = example_profile[1,],
 
 #plotting
 plot(example_profile$geometry)
-plot(poly_example1$geometry, add =T, col = "darkblue")
-plot(poly_example2$geometry, add =T, col = "darkred")
+plot(poly_example1$geometry, add =TRUE, col = "darkblue")
+plot(poly_example2$geometry, add =TRUE, col = "darkred")
 
 
 }

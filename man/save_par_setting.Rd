@@ -7,9 +7,13 @@
 save_par_setting(name, variable, value, par_ID)
 }
 \arguments{
-\item{name}{the name of the function same to the horizontname}
+\item{name}{name of the function same to the horizontname}
 
-\item{fun}{A function}
+\item{variable}{par variable e.g col}
+
+\item{value}{value of variable e.g. blue}
+
+\item{par_ID}{the "id" which defines the layer}
 }
 \value{
 A unit sf layer with an parID column

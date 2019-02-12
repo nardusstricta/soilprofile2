@@ -52,12 +52,13 @@
 sf_polygon <- function(df_geom, df_attri = NULL){
   shape_areas <- df_geom %>%
     sf::st_as_sf(coords = c("x", "y")) %>%
-    dplyr::group_by(name) %>%
+    dplyr::group_by_(~name) %>%
     dplyr::summarise(do_union = F) %>%
     sf::st_cast("POLYGON") %>%
     sf::st_cast("MULTIPOLYGON") %>%
-    dplyr::mutate(area = sf::st_area(geometry)) %>% 
-    dplyr::ungroup()
+    dplyr::mutate_(area = ~ sf::st_area(geometry)) %>% 
+    dplyr::ungroup() %>% 
+    sf::st_sf()
   
   if(!is.null(df_attri)){
     shape_areas <- shape_areas %>% 

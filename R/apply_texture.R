@@ -4,25 +4,23 @@
 #'  These functions represent specific patterns for each horizon 
 #'  and are named according to the horizons. 
 #'  
-#'  The actual task is to link the horizon rows to the corresponding functions and 
-#'  then apply these functions
-#'  
-#'  If a horizonname do not matched a Function it 
-#'  will be used the \link[soilprofile2]{build_random_pattern} function
-#'
-#'   
-#' 
-#' @param shape A Simple Features with one row for each hoizon. At least with one geometry column and one "nameC" column (C for character)
-#' @param buffer Usually a negative value that indicates the distance between the pattern and the horizon boundary. 
-#' @param fun_list A tibble with a name column that contains as many horizon 
-#' shortcuts as possible and a column with the corresponding functions that create a pattern.
-#'  An example tibble, which can be extended with the function \link[soilprofile2]{save_horizont_fun},
-#'  is stored in the package (data("fun_list"))
-#' @param df_par_wide A tibble with the graphical parameters in wide format. 
+#'  df_par_wide is a tibble with the graphical parameters in wide format (saved in the sys.data). 
 #'  The key to join the tables is the "name" column and the "par_Id" column. 
 #'  The "par_Id" column starts with one for the background layer and then ascends to the top layer. 
 #'  An example tibble, which can be extended with the function \link[soilprofile2]{save_par_setting},
 #'  is stored in the package (data("df_par_wide"))
+#'  
+#'  The actual task is to link the horizon rows to the corresponding functions and 
+#'  then apply these functions
+#'  
+#'  If a horizonname do not matched it 
+#'  will be used the \link[soilprofile2]{random_line_pattern} function
+#'
+#'   
+#' 
+#' @param shape A Simple Features with one row for each hoizon. At least with one geometry column and one "nameC" column ("C" for character)
+#' @param buffer Usually a negative value that indicates the distance between the pattern and the horizon boundary. 
+#' @param background whether the points should have a background (only if grain_size information exists). Either a string with 0 and 1 or the default "random", then the values are selected randomly. 
 #' 
 #' @return This function returns a new Simple Features which
 #'  contains all informations (columns) of the Input Simple Features (shape).
@@ -30,52 +28,77 @@
 #'  Adding patterns to the given layer can result in multiple geometries.  (e.g. points and lines). 
 #'  To save this information, rows are added to the dataset.  
 #' @examples 
-#' 
 #' library(dplyr)
-#' library(sf)
-#' ## Example data with two horizont (Ah + Bv)
-#' df_example <- data.frame(x = c(0, 20, 20, 0, 0), 
-#' y = c(0, 0, 20, 20,0),
-#' nameC = rep("Ah", 5)) %>%
-#' rbind(data.frame(x = c(0, 20, 20, 0, 0), 
-#' y = c(20, 20, 50, 50,20),
-#' nameC = rep("Bv", 5))
-#' )
+#' library(soilprofile2)
+#' library(ggplot2)
 #' 
-#' ## Build an Simple Features
-#' shape_example <- df_example %>%
-#' st_as_sf(coords = c("x", "y")) %>% 
-#' group_by(nameC) %>%
-#' summarise(do_union = FALSE) %>%
-#' st_cast("POLYGON") %>%
-#' st_cast("MULTIPOLYGON")
+#' #create an example dataset and modify the color and depths 
+#' df_example <-  data.frame(name = c("Ah", "AhBv", "Bv"), 
+#'                           depth = c("0-15", "15-43.4", "43.4-70"), 
+#'                           col = c("7.5YR 2/1","10YR 4/3", "2.5Y 5/3"),
+#'                           skel_dim = c(".5-1","1-2", "2-3"), 
+#'                           skel_ab = c(0.2, 0.6, 1.9)) %>% 
+#'   data_mod()
+#' 
+#' #Set coordinates, four points on each horizon 
+#' cord_example  <-  cord_setting(df_example, plot_width = 2)
+#' 
+#' #create a simple feature: Each line represents a horizon 
+#' #with one polygon as geometry.
+#' sf_example <- sf_polygon(df_geom = cord_example,
+#'                          df_attri = df_example)
+#' 
 #' ## Creation of the patterns
-#' texture_example <- apply_texture(shape = shape_example, buffer = -1.3) 
+#' texture_example <- apply_texture(shape = sf_example,
+#'                                  buffer = -1.3)
 #' 
 #' ## Plotting Data
 #' library(ggplot2)
-#' texture_example %>% ggplot() + geom_sf()
+#' texture_example %>%
+#'   ggplot() +
+#'   geom_sf() +
+#'   soil_theme()
+#' 
 #' @export
 #' @author Gabriel Holz
 
 
-apply_texture <- function(shape, buffer = -1){
+apply_texture <- function(shape, buffer = -1, background = "random"){
   
   stopifnot("sf" %in% class(shape))
   stopifnot("nameC" %in% colnames(shape))
-  
+
 
   texture_sf <- shape %>% 
-    dplyr::mutate(fun = c(get(as.character(nameC)))) %>% 
-    dplyr::mutate(fun = ifelse(fun == "NULL", 
-                               c(soilprofile2::build_random_pattern), fun)) 
+    dplyr::mutate_(background = ~ ifelse(background == "random",
+                                         sample(0:1, nrow(.),
+                                                replace = TRUE), background)) %>% 
+    dplyr::rowwise() %>% 
+    dplyr::mutate_(grain_size = ~ ifelse("grain_size" %in% names(.),
+                                         grain_size, 0)) %>% 
+    dplyr::mutate_(fun = ~ if_else(grain_size != 0, "fun_grain_size", 
+                                "random_line_pattern")) %>%
+    dplyr::mutate_(fun = ~ ifelse(exists(as.character(nameC)),
+                                   c(get(as.character(nameC))),
+                                   c(get(as.character(fun))))
+                   ) %>%
+    dplyr::ungroup()
+  
   
   temp_geom <- do.call(
     rbind, lapply(
       1:nrow(texture_sf), function(i){
         texture(shape = texture_sf[i,],
                 fun_horizont = texture_sf$fun[[i]],
-                buffer = buffer
+                buffer = buffer,
+                if(exists("texture_sf$grain_size") && texture_sf$grain_size[i] != 0){
+                  par_size =  texture_sf$grain_size[i]
+                } else NA,
+                if(exists("texture_sf$grain_size") && texture_sf$grain_size[i] != 0){
+                  background =  texture_sf$background[i] 
+                } else NA
+                
+                
         )
       }
     )
@@ -89,6 +112,9 @@ apply_texture <- function(shape, buffer = -1){
   erg <- temp_geom %>% 
     dplyr::left_join(df_par_wide, 
                      by = c("nameC", "par_ID")) 
+  #fill random pars 
+ # erg1 <- par_default(erg)
   
   return(erg)
 }
+

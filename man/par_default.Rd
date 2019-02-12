@@ -6,6 +6,9 @@
 \usage{
 par_default(polygon)
 }
+\arguments{
+\item{polygon}{A Simple Feature geometry plot information see \link[soilprofile2]{apply_texture}}
+}
 \value{
 A unit multipolygon (sf) with one parID column
 }

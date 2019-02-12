@@ -7,10 +7,14 @@
 convex_poly(cord, attr_poly, poly_id)
 }
 \arguments{
-\item{data}{A simple feature with at least the following parameter as colnames:}
+\item{cord}{A numeric vector with the point coordinates specifying the position of the polygon.}
+
+\item{attr_poly}{the parameters described in function \link[soilprofile2]{skeleton}}
+
+\item{poly_id}{an id ...}
 }
 \value{
-A sf polygon layer with one line for each input point
+a matrix with the x and y coordinates and an id for each polygon
 }
 \description{
 This function builds polygons with given area and number of sides. The starting point is one of the corner points of the polygon.
