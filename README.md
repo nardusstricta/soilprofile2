@@ -12,11 +12,16 @@ Installation
 
 The package is currently only available on Github
 
+``` r
+#install the development version from github with
+#install.packages("devtools")
+#devtools::install_github("nardusstricta/soilprofile2")
+```
+
 Usage
 -----
 
-This package provides functions to graphically represent soil properties. Morphological data gathered in the field such as horizon boundaries, root abundance and dimensions, skeletal shape, abundance and dimension as well as
-meaningful soil color may be represented via the plot function.
+Morphological data collected in the field, such as horizon boundaries, root frequency and dimensions, skeleton shape, frequency and dimension as well as meaningful soil colours, can be visualised by using different layers.To create and calculate the geometries the Simple Feature Access is used which is integrated in the package [sf](https://github.com/r-spatial/sf). The data management is done with dplyr [dplyr](https://cran.r-project.org/web/packages/dplyr/vignettes/dplyr.html). For the smoothing of geometries the "Kernel smoothing" algorithm from the Smoothr package [smoothr](https://github.com/mstrimas/smoothr) is used. To convert the colors (from Munsell to rgb) the fuction from the package [soil](https://cran.r-project.org/web/packages/aqp/index.html) is applied.
 
 ### Data pre-processing
 
@@ -37,16 +42,20 @@ df_example <- data.frame(name = c("Ah", "Bvh", "BvCv"),
                          grain_sd = c(3, 10, 4)) %>% 
   data_mod()
 
-#Set coordinates, four points on each horizon 
+#set coordinates, four points on each horizon 
 cord_example  <-  cord_setting(df_example, plot_width = 2)
 
-#create a simple feature: Each line represents a horizon 
+#create a simple feature: each line represents a horizon 
 #with one polygon as geometry.
 sf_example <- sf_polygon(df_geom = cord_example,
                          df_attri = df_example)
+#this data is stored in the package 
+#as example datan (data("soil_example_sf"))
 ```
 
 ### Plot
+
+In a simplest case we plot the color into the respective geometries
 
 ``` r
 sf_example %>% 
@@ -83,7 +92,7 @@ example_profile %>%
 
 <img src="README-data_mod-1.png" width="1008" />
 
-Secondly, we can modify the profile so that the horizon polygons mix, i.e. a single horizon consists of a multipolygon
+Secondly, we can modify the profile so that the horizon polygons mix, i.e. a single horizon consists of a multipolygon.
 
 ``` r
 
@@ -113,7 +122,7 @@ smooth_profile %>%
 
 ### Rock content
 
-We create a new layer for the rock content. Beside the basic information (dimension and abundance) we can add the following parameters:
+We create a new layer for the rock content. Beside the basic information (dimension and abundance) we can add the following parameters, which are explained in detail in the function description (?soilprofile2::skeleton)
 
 ``` r
 
@@ -168,7 +177,7 @@ The texture is the vector layer of the package. There are three options for the 
 
 1.  we have no information about the texture, but we still want a pattern. For example for the delimitation of horizons in a monochrome display. In this case, the function will create random line patterns for each horizon.
 2.  We have information (size and variation) about the texture. Then a point grid is drawn in each horizon. This can also be done with the soil color.
-3.  We want a special horizon pattern. Then we can write our own function to create the desired pattern. Useful are the functions that can be created with the prefix basic\_ . A useful tool for this are the functions with the prefix basic\_ .
+3.  We want a special horizon pattern. Then we can write our own function to create the desired pattern. A useful tool for this are the functions with the prefix basic\_ .
 
 The three options are hierarchically structured: whenever there is a specific function, it will always be preferred. If there is information about the texture, a random pattern will never be created.
 
@@ -198,12 +207,18 @@ texture_par %>%
 
 ### Structure
 
+For the [soil structure](https://en.wikipedia.org/wiki/Soil_structure) we need a photo (png) with the contours. This will be converted into a monochrome vector geometry and can be plotted into the corresponding horizon. As an example two photos are stored in the package. Let's take a look:
+
 ``` r
+#first we need a path to our png file 
 str_Bvh <- system.file("extdata", "broeckel.png", package = "soilprofile2")
 str_BvCv <- system.file("extdata", "prismen.png", package = "soilprofile2")
 
+#Then we put the first structure into the second horizon
+#and the second into the third. 
 str_all <- multiple_png(sf_example[c(2,3), ], c(str_Bvh, str_BvCv))
 
+#plot the result 
 sf_example %>% 
   ggplot() +
   geom_sf(fill = sf_example$rgb_col) +
@@ -213,42 +228,109 @@ sf_example %>%
 
 <img src="README-structure-1.png" width="1008" />
 
-### Soil processes
+### Soil forming processes
 
-### PNG import
+If we want to represent specific [soil forming processes](https://en.wikipedia.org/wiki/Pedogenesis), it gets a little more complicated. That means we need a few more lines of code. The core function (process\_layer) takes a numeric vector of length four, with xmin, ymin, xmax and ymax values. In this area the process symbols are to be drawn, the number is specified with the parameter "number". Additionally, the following parameters can be defined: a buffer to the horizon border and any number of layers on which no symbol should be drawn. The function x returns points layer. We can combine this with a list of defined symbols by name. This is stored in the folder data (data("process\_symbols")). Let's give an example:
 
 ``` r
+#create the vector
+poly2 <- sf::st_bbox(soil_example_sf$geometry[2]) 
+#apply the fuction 
+point2 <- process_layer(poly2, number = 5, buffer = 3) %>% 
+  #for each point one row:
+  sf::st_cast("POINT") %>%
+  #drag random example symbols from the table included in the package.  
+  sf::st_sf(name = sample(process_symbols$name, 
+                          length(.), replace = TRUE)) %>% 
+  #get the aestetic parameters by a join. 
+  dplyr::left_join(process_symbols, by = "name")
 
+#plotting
+soil_example_sf %>% 
+  ggplot() +
+  geom_sf(fill = soil_example_sf$rgb_col) +
+  geom_sf(data = point2, 
+          shape = point2$shape, 
+          color = point2$color, 
+          fill = point2$fill, 
+          stroke = point2$stroke) +
+  soil_theme()
+```
+
+<img src="README-processes -1.png" width="1008" />
+
+If we want a legend we can call the function "soil\_legend". But before we can do that we have to make sure that no symbols are double or missing.
+
+``` r
+#legend:
+df_legend <- data.frame(name = unique(point2$name)) %>% 
+  left_join(process_symbols, by = "name")
+
+#plotting:
+
+soil_legend(df_legend)
+```
+
+<img src="README-processes2-1.png" width="1008" />
+
+Suppose we have already plotted the skeleton content and now want to add water symbols. Then we have to add the skeleton content to the function "process\_layer". Otherwise we do exactly the same as before.
+
+``` r
+#reduce the rock abundanz
+soil_example_sf$skel_ab[3] <- 0.2
+
+#define the rock parameter form horizont 3:
+skeleton_mat <- data.frame(
+  name = c(3),
+  nSides = c(20),
+  smooth = c(TRUE),
+  union = c(TRUE),
+  strat = c(FALSE),
+  cellnumber = c(0),
+  rotation = c(0),
+  phi = c(0)
+)
+#apply skeleton function
+spoint <- skeleton(shape_mod = soil_example_sf,
+                   skeleton_mat = skeleton_mat)
+#create the bbox vector:
+poly3 <- sf::st_bbox(soil_example_sf$geometry[3])
+point3 <- process_layer(poly3, number = 7, 
+                        buffer = 1.5, layer1 = spoint) %>% 
+  #define symbols
+  sf::st_sf(name = "Wasser") %>% 
+  dplyr::left_join(process_symbols, by = "name")
+
+#and plotting...
+soil_example_sf %>% 
+  ggplot() +
+  geom_sf(fill = soil_example_sf$rgb_col) +
+  geom_sf(data = point3, 
+          shape = point3$shape, 
+          color = point3$color, 
+          fill = point3$fill, 
+          stroke = point3$stroke,
+          size = 3) +
+  geom_sf(data = spoint) +
+  soil_theme()
+```
+
+<img src="README-processes3-1.png" width="1008" /> \#\#\# PNG import Let's assume we have an extraordinarily good photo that represents the horizon better than any other attempt. Then we can add the photo to the soil profile. Of course it can also be a photo from a drawing or a Photoshop project. In the package we have one example file:
+
+``` r
+#get the path
 photo_Ah_path <- system.file("extdata", "photo_example.png", package = "soilprofile2")
+
+#mask an extent the photo tho the first horizont:
 photo_Ah <- png_import(photo_Ah_path, sf_example[1,], raster2polygon = F)
 
-
+#plot the result:
 sf_example %>% 
   ggplot() +
   geom_sf(fill = sf_example$rgb_col) +
   geom_sf(data = str_all, fill = "black") +
-  ggspatial::layer_spatial(photo_Ah)
+  ggspatial::layer_spatial(photo_Ah) +
+  soil_theme()
 ```
 
 <img src="README-PNG-1.png" width="1008" />
-
-``` r
-  soil_theme()
-#> List of 4
-#>  $ axis.title.x    : list()
-#>   ..- attr(*, "class")= chr [1:2] "element_blank" "element"
-#>  $ axis.text.x     : list()
-#>   ..- attr(*, "class")= chr [1:2] "element_blank" "element"
-#>  $ axis.ticks.x    : list()
-#>   ..- attr(*, "class")= chr [1:2] "element_blank" "element"
-#>  $ panel.background: list()
-#>   ..- attr(*, "class")= chr [1:2] "element_blank" "element"
-#>  - attr(*, "class")= chr [1:2] "theme" "gg"
-#>  - attr(*, "complete")= logi FALSE
-#>  - attr(*, "validate")= logi TRUE
-```
-
-Contributing
-------------
-
-To contribute to the development of this project please refer to the [guidelines](CONTRIBUTING.md).
