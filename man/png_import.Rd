@@ -4,7 +4,7 @@
 \alias{png_import}
 \title{imports png file an maks to the specific horizont position}
 \usage{
-png_import(file_path, horizont, smoothness, raster2polygon = T)
+png_import(file_path, horizont, smoothness = 2, raster2polygon = T)
 }
 \arguments{
 \item{file_path}{a numeric value between 1 and 6 calling the stored L-system}
@@ -17,4 +17,18 @@ png_import(file_path, horizont, smoothness, raster2polygon = T)
 }
 \description{
 sourse sollte noch angepasst werden, evt dropbox oder db
+}
+\examples{
+library(dplyr) 
+library(ggplot2)
+sf_example <- soilprofile2::soil_example_sf
+photo_Ah_path <- system.file("extdata", "photo_example.png", package = "soilprofile2")
+photo_Ah <- png_import(photo_Ah_path, sf_example[1,], raster2polygon = FALSE)
+
+
+sf_example \%>\%
+  ggplot() +
+  geom_sf(fill = sf_example$rgb_col) +
+  ggspatial::layer_spatial(photo_Ah)
+soil_theme()
 }

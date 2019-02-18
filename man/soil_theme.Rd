@@ -7,8 +7,8 @@
 soil_theme()
 }
 \value{
-A unit multipolygon (sf) with one parID column
+ggplot themes
 }
 \description{
-This function draws a set of randompolygons.
+a function to call the theme settings of ggplot. The most important is the absence of the X-axis.
 }

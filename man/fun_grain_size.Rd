@@ -9,7 +9,7 @@ fun_grain_size(polygon, ...)
 \arguments{
 \item{polygon}{polygon A Simple Feature or  just  a "sfc_MULTIPOLYGON" or "sfc_POLYGON" geometry.}
 
-\item{...}{ignored}
+\item{...}{information about texture size and varation.}
 }
 \value{
 This function returns a new Simple File geometry

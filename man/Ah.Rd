@@ -15,5 +15,5 @@ Ah(polygon, ...)
 A unit sf layer with an parID column
 }
 \description{
-This function draws a Ah pattern, with the following  helper fuction \link[soilprofile2]{basic_regular_point}
+This function draws a Bv pattern, with the following  helper fuction \link[soilprofile2]{basic_line}
 }

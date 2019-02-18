@@ -36,6 +36,7 @@ point_2_polygon <- function(sf_point){
     )
   ) %>% 
     sf::st_sf(df_attr, geometry = .) %>% 
+    sf::st_convex_hull() %>%
     sf::st_buffer(0.0)
 }
 
@@ -63,28 +64,31 @@ convex_poly <- function(cord, attr_poly, poly_id){
   #checking if parameters are available for stratified rock 
   area <- attr_poly$area_size
   nSides <- attr_poly$nSides
-  if(any(c("phi", "vertex") %in% colnames(attr_poly)) == T){
-    
-    phi <- attr_poly$phi 
-    a <- 5  #attr_poly$a
-    b <- 3  #attr_poly$b
-    
-    if(phi == 0){
-      points_list1 <-  poly_fun(nSides = nSides, area = area)
-    }else{
+  if("phi" %in% colnames(attr_poly)){
+    if(attr_poly$phi != 0){
+      phi <- pi/(pi - attr_poly$phi) 
+      a <- 5  #attr_poly$a
+      b <- 3  #attr_poly$b
+      
       t <- seq(0, 2 * pi, length.out = attr_poly$nSides)
       x <- a * cos(t) * cos(phi) - b * sin(t) * sin(phi)
       y <- a * cos(t) * cos(phi) + b * sin(t) * cos(phi)
-      y <- rnorm(y, y, .01)
-      x <- rnorm(x, x, .1)
+      y <- rnorm(y, y, .02)
+      x <- rnorm(x, x, .2)
       points_list1 <- list(x=NULL, y= NULL)
       points_list1$x <- x
       points_list1$y <- y
       nSides <- length(t)
+    }else{
+      points_list1 <-  poly_fun(nSides = nSides, area = area)
     }
   }else{
-     points_list1 <-  poly_fun(nSides = nSides, area = area)
+    points_list1 <-  poly_fun(nSides = nSides, area = area)
   }
+    
+    
+    
+    
   
   
   # Find the area of the polygon

@@ -29,5 +29,6 @@ Imports:
     usethis (>= 1.4.0),
     stats (>= 3.4.4),
     utils (>= 3.4.4),
-    methods (>= 3.4.4)
+    methods (>= 3.4.4),
+    ggspatial (>= 1.0.4)
     

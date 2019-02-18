@@ -4,7 +4,7 @@
 #'
 #' @param lmod A simple feature line layer which was created with the \link[soilprofile2]{line_mod} function for example. The horizon borders should be defined by these lines. 
 #' @param shape_mod A simple feature polygon layer with one line for each horizon. For example, created by the function \link[soilprofile2]{sf_polygon}  or \link[soilprofile2]{split_polygon} 
-#' @param attr_df Attribute table with the following parameters for the horizon transitions: "buffer_size" To what extent should the transition extend into the neighboring horizon? "buffer_number" How many polygons should lie in the neighboring horizon? "nSides" How many sides should the polygons have? "rate" The area size of the polygons is drawn from a gamma distribution. The "rate" parameter required for this can be set individually for each horizon. "name" The horizon id as number
+#' @param attr_df Attribute table with the following parameters for the horizon transitions: "buffer_size" How far should the transition extend into the neighbouring horizon? "buffer_number" How many polygons should lie in the neighboring horizon? "nSides" How many sides should the polygons have? "rate" The area size of the polygons is drawn from a gamma distribution. The "rate" parameter required for this can be set individually for each horizon. "name" The horizon id as number
 #' @param shape The parameter to define the area for the polygon. The smaller it is, the smaller is the area. In addition, the distribution is skewed.
 #' @param smoothness is passed to function \link[smoothr]{smooth_ksmooth} ; a parameter controlling the bandwidth of the Gaussian kernel, and therefore the smoothness and level of generalization. By default, the bandwidth is chosen as the mean distance between adjacent points. The smoothness parameter is a multiplier of this chosen bandwidth, with values greater than 1 yielding more highly smoothed and generalized features and values less than 1 yielding less smoothed and generalized features.
 #' @param seed Seed setting for reproducible results 
@@ -104,7 +104,7 @@ smooth_trans <- function(lmod, shape_mod, attr_df,  shape = 10, seed = 33, smoot
     dplyr::right_join(df, by = "name") %>% 
     #dplyr::group_by_(~name) %>% 
     sf::st_buffer(dist = df$buffer_size, endCapStyle = "FLAT") %>% 
-    dplyr::filter_("buffer_size" != 0) %>%
+    dplyr::filter_(~ buffer_size != 0) %>%
     sf::st_intersection(shape_mod) %>% 
     dplyr::select_(~name, ~nSides, ~rate, ~buffer_number) 
   
@@ -164,9 +164,9 @@ smooth_trans <- function(lmod, shape_mod, attr_df,  shape = 10, seed = 33, smoot
     
     #Select all polygons on the border 
     temp2 <- temp_int %>% 
-      dplyr::filter_("int" == T) %>% 
-      dplyr::select_(~name) %>%
-      dplyr::group_by_(~name) %>% 
+      dplyr::filter_(~ int == T) %>% 
+      dplyr::select_(~ name) %>%
+      dplyr::group_by_(~ name) %>% 
       dplyr::summarise(do_union = F) %>% 
       sf::st_buffer(0.0) %>% 
       sf::st_intersection(sf::st_union(shape_mod)) 
@@ -179,9 +179,9 @@ smooth_trans <- function(lmod, shape_mod, attr_df,  shape = 10, seed = 33, smoot
 
 #2. and  all others 
     temp3 <- temp_int %>% 
-      dplyr::filter_("int" == F) %>% 
-      dplyr::select_(~name) %>%
-      dplyr::group_by_(~name) %>% 
+      dplyr::filter_(~ int == F) %>% 
+      dplyr::select_(~ name) %>%
+      dplyr::group_by_(~ name) %>% 
       dplyr::summarise(do_union = F) %>% 
       sf::st_buffer(0.0) %>% 
       sf::st_intersection(sf::st_union(shape_mod1))

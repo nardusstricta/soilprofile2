@@ -2,17 +2,33 @@
 % Please edit documentation in R/png_import.R
 \name{multiple_png}
 \alias{multiple_png}
-\title{imports png file an maks to the specific horizont position}
+\title{imports multiple png file an maks to the specific horizont position}
 \usage{
 multiple_png(shape_temp, path_temp, ...)
 }
 \arguments{
-\item{shape_temp}{a numeric value between 1 and 6 calling the stored L-system}
+\item{shape_temp}{a simple feature with the same length of "path_temp"}
 
-\item{path_temp}{A layer with the skeleton content as polygon (bei fehlen gibt es noch einen Fehler)}
+\item{path_temp}{a character string with the path of each texture .png}
 
 \item{...}{is passed to function \link[soilprofile2]{png_import}}
 }
 \description{
-sourse sollte noch angepasst werden, evt dropbox oder db
+imports multiple png file an maks to the specific horizont position
+}
+\examples{
+library(dplyr) 
+library(ggplot2)
+
+sf_example <- soilprofile2::soil_example_sf
+str_Bvh <- system.file("extdata", "broeckel.png", package = "soilprofile2")
+str_BvCv <- system.file("extdata", "prismen.png", package = "soilprofile2")
+
+str_all <- multiple_png(sf_example[c(2,3), ], c(str_Bvh, str_BvCv))
+
+sf_example \%>\% 
+  ggplot() +
+  geom_sf(fill = sf_example$rgb_col) +
+  geom_sf(data = str_all, fill = "black") +
+  soil_theme()
 }

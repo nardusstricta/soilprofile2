@@ -12,7 +12,7 @@ smooth_trans(lmod, shape_mod, attr_df, shape = 10, seed = 33,
 
 \item{shape_mod}{A simple feature polygon layer with one line for each horizon. For example, created by the function \link[soilprofile2]{sf_polygon}  or \link[soilprofile2]{split_polygon}}
 
-\item{attr_df}{Attribute table with the following parameters for the horizon transitions: "buffer_size" To what extent should the transition extend into the neighboring horizon? "buffer_number" How many polygons should lie in the neighboring horizon? "nSides" How many sides should the polygons have? "rate" The area size of the polygons is drawn from a gamma distribution. The "rate" parameter required for this can be set individually for each horizon. "name" The horizon id as number}
+\item{attr_df}{Attribute table with the following parameters for the horizon transitions: "buffer_size" How far should the transition extend into the neighbouring horizon? "buffer_number" How many polygons should lie in the neighboring horizon? "nSides" How many sides should the polygons have? "rate" The area size of the polygons is drawn from a gamma distribution. The "rate" parameter required for this can be set individually for each horizon. "name" The horizon id as number}
 
 \item{shape}{The parameter to define the area for the polygon. The smaller it is, the smaller is the area. In addition, the distribution is skewed.}
 

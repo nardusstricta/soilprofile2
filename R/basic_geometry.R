@@ -391,11 +391,12 @@ basic_regular_point <- function(polygon, cellnumber = c(10, 10), rotation = 45){
   center <- sf::st_centroid(sf::st_union(inpoly))
   
   grd <- sf::st_make_grid(tran(geo = inpoly, ang = -rotang, center = center),
-                          what = "centers", square = TRUE, n = cellnumber) %>% 
+                          what = "corners", square = TRUE, n = cellnumber) %>% 
     sf::st_union()
   
   grd_rot <- tran(grd, rotang, center) %>% 
     sf::st_intersection(polygon) %>% 
-    sf::st_sf(parID = 1, geometry = .)
+    sf::st_sf(par_ID = 1, geometry = .)
+  return(grd_rot)
   
 }

@@ -7,7 +7,7 @@
 apply_texture(shape, buffer = -1, background = "random")
 }
 \arguments{
-\item{shape}{A Simple Features with one row for each hoizon. At least with one geometry column and one "nameC" column ("C" for character)}
+\item{shape}{A simple features file with one row for each hoizon. At least with one geometry column and one "nameC" column ("C" for character). The columns grain_size and grain_sd specify the texture. If the value is not zero or NA, a point grid is created for the texture. With the function par_dafault the grain size can be changed.}
 
 \item{buffer}{Usually a negative value that indicates the distance between the pattern and the horizon boundary.}
 
@@ -21,39 +21,46 @@ This function returns a new Simple Features which
  To save this information, rows are added to the dataset.
 }
 \description{
-A list of functions is stored in the package.
+A set of functions is stored in the package.
  These functions represent specific patterns for each horizon 
- and are named according to the horizons. 
+ and are named according to the horizons. Pay attention! don't write functions with the names that already exist in R for example "C".
  
  df_par_wide is a tibble with the graphical parameters in wide format (saved in the sys.data). 
  The key to join the tables is the "name" column and the "par_Id" column. 
  The "par_Id" column starts with one for the background layer and then ascends to the top layer. 
  An example tibble, which can be extended with the function \link[soilprofile2]{save_par_setting},
- is stored in the package (data("df_par_wide"))
+ is stored in the package (sysdata.rda)
  
  The actual task is to link the horizon rows to the corresponding functions and 
  then apply these functions
  
  If a horizonname do not matched it 
- will be used the \link[soilprofile2]{random_line_pattern} function
+ will be used the \link[soilprofile2]{random_line_pattern} function. If the information about the soil texture is available, the texture function \link[soilprofile2]{fun_grain_size} is preferred.
 }
 \examples{
-library(dplyr)
-library(soilprofile2)
-library(ggplot2)
 
-#create an example dataset and modify the color and depths 
-df_example <-  data.frame(name = c("Ah", "AhBv", "Bv"), 
-                          depth = c("0-15", "15-43.4", "43.4-70"), 
+#create an example dataset and modify the color and depths
+#The columns grain_size and grain_sd specify the texture. 
+#If the value is not zero or NA, a point grid is created for the texture.
+#With the function par_dafault the grain size can be changed. 
+#Only for the "AhBv" horizontal there is a function in the package.
+#For the other horizons the texture is drawn.
+
+library(dplyr) 
+library(ggplot2)
+df_example <-  data.frame(name = c("Bt", "AhBv", "Cve"),
+                          depth = c("0-15", "15-43.4", "43.4-70"),
                           col = c("7.5YR 2/1","10YR 4/3", "2.5Y 5/3"),
-                          skel_dim = c(".5-1","1-2", "2-3"), 
-                          skel_ab = c(0.2, 0.6, 1.9)) \%>\% 
+                          skel_dim = c(".5-1","1-2", "2-3"),
+                          skel_ab = c(0.2, 0.6, 1.9),
+                          grain_size = c(1, 0, 1),
+                          grain_sd = c(1, 0, 1)) \%>\%
   data_mod()
 
-#Set coordinates, four points on each horizon 
+#Set coordinates, four points on each horizon
 cord_example  <-  cord_setting(df_example, plot_width = 2)
 
-#create a simple feature: Each line represents a horizon 
+#create a simple feature: Each line represents a horizon
 #with one polygon as geometry.
 sf_example <- sf_polygon(df_geom = cord_example,
                          df_attri = df_example)

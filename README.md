@@ -12,12 +12,6 @@ Installation
 
 The package is currently only available on Github
 
-``` r
-#install the development version from github with
-#install.packages("devtools")
-#devtools::install_github("nardusstricta/soilprofile2")
-```
-
 Usage
 -----
 
@@ -32,12 +26,15 @@ library(dplyr)
 library(soilprofile2)
 library(ggplot2)
 
+
 #create an example dataset and modify the color and depths 
-df_example <-  data.frame(name = c("Ah", "Bv", "C"), 
-                          depth = c("0-15", "15-43.4", "43.4-70"), 
-                          col = c("7.5YR 2/1","10YR 4/3", "2.5Y 5/3"),
-                          skel_dim = c(".5-1","1-2", "2-3"), 
-                          skel_ab = c(0.2, 0.6, 1.9)) %>% 
+df_example <- data.frame(name = c("Ah", "Bvh", "BvCv"),
+                         depth = c("0-15", "15-43.4", "43.4-70"),
+                         col = c("7.5YR 2/1","10YR 4/3", "2.5Y 5/3"),
+                         skel_dim = c(".1-.8","1-2", "2-3"),
+                         skel_ab = c(0.2, 0.4, .9),
+                         grain_size = c(3, 2, 1),
+                         grain_sd = c(3, 10, 4)) %>% 
   data_mod()
 
 #Set coordinates, four points on each horizon 
@@ -66,8 +63,9 @@ First we create a new line between each horizon and split the entire profile wit
 
 ``` r
 lattri_example <- data.frame(name= c(1,2,3),
-                             numberX = c(2, 5, 12),
-                             sd = c(1,.5, 1), # change it from c(1,.5, 1) to c(1,3,1)
+                             numberX = c(3, 6, 6),
+                             sd = c(.3, .5, 1), 
+                             # change it from c(.3, .5, 1) to c(1, 3, 1)
                              sm = c(TRUE, TRUE, FALSE)
 )
 
@@ -118,22 +116,24 @@ smooth_profile %>%
 We create a new layer for the rock content. Beside the basic information (dimension and abundance) we can add the following parameters:
 
 ``` r
+
 skeleton_mat <- data.frame(
-  name = c(2, 3),
-  nSides = c(5, 20),
-  smooth = c( T, T),
-  union = c( F, T),
-  phi = c( 0, 0),
-  strat = c( F, F), 
-  cellnumber = c(0, 0),
-  rotation = c(0, 0)
+  name = c(1, 2, 3),
+  nSides = c(4, 13, 20),
+  smooth = c(T, T, T), 
+  union = c(T, F, T), 
+  strat = c(F, T, F), 
+  cellnumber = c(0, 18, 0),
+  rotation = c(0, 20, 0), 
+  phi = c(0, 0, 0)
 )
-spoint <- skeleton(shape_mod = example_profile, 
+
+spoint <- skeleton(shape_mod = sf_example, 
                    skeleton_mat = skeleton_mat)
 #Plot the result:
-smooth_profile %>%
+sf_example %>%
   ggplot() +
-  geom_sf(fill = smooth_profile$rgb_col) +
+  geom_sf(fill = sf_example$rgb_col) +
   geom_sf(data = spoint) +
   soil_theme()
 ```
@@ -142,19 +142,21 @@ smooth_profile %>%
 
 ### Root
 
-Also for the roots we create an own layer
+We can also create our own layer for the roots. Here we can define the points from which the roots should be drawn, the length of the roots and the length variation.
 
 ``` r
-root_example <- random_line(polygon = smooth_profile[1,],
+root_example <- basic_random_line(polygon = smooth_profile[1,],
                             number = 800,
                             line_length = .5, 
-                            variation = 1,
+                            variation = .4,
                             smoothness = 5)
 smooth_profile %>%
   ggplot() +
   geom_sf(fill = smooth_profile$rgb_col) +
   geom_sf(data = spoint) +
-  geom_sf(data = root_example, size = root_example$id/max(root_example$id), alpha = .3) +
+  geom_sf(data = root_example, 
+          size = root_example$id/max(root_example$id), 
+          col = "orange4") + #specifying the color
   soil_theme()
 ```
 
@@ -162,11 +164,89 @@ smooth_profile %>%
 
 ### Texture
 
+The texture is the vector layer of the package. There are three options for the user:
+
+1.  we have no information about the texture, but we still want a pattern. For example for the delimitation of horizons in a monochrome display. In this case, the function will create random line patterns for each horizon.
+2.  We have information (size and variation) about the texture. Then a point grid is drawn in each horizon. This can also be done with the soil color.
+3.  We want a special horizon pattern. Then we can write our own function to create the desired pattern. Useful are the functions that can be created with the prefix basic\_ . A useful tool for this are the functions with the prefix basic\_ .
+
+The three options are hierarchically structured: whenever there is a specific function, it will always be preferred. If there is information about the texture, a random pattern will never be created.
+
+If we don't want a black and white representation and to adjust the size of the texture points we have to use the function "par\_default" to adapt the standard graphic parameters.
+
+``` r
+## creation of the patterns
+texture_example <- apply_texture(shape = example_profile,
+                                 buffer = -1, 
+                                 background = c(T, T, T)
+                                 )
+##set dafault aesthetics
+texture_par <-  par_default(texture_example)
+
+## plotting data
+texture_par %>%
+  ggplot() +
+  geom_sf(fill = texture_par$bgc,
+          col = texture_par$col,
+          shape = texture_par$pch,
+          linetype = texture_par$linetype, 
+          size = texture_par$size) +
+  soil_theme()
+```
+
+<img src="README-textur-1.png" width="1008" />
+
 ### Structure
+
+``` r
+str_Bvh <- system.file("extdata", "broeckel.png", package = "soilprofile2")
+str_BvCv <- system.file("extdata", "prismen.png", package = "soilprofile2")
+
+str_all <- multiple_png(sf_example[c(2,3), ], c(str_Bvh, str_BvCv))
+
+sf_example %>% 
+  ggplot() +
+  geom_sf(fill = sf_example$rgb_col) +
+  geom_sf(data = str_all, fill = "black") +
+  soil_theme()
+```
+
+<img src="README-structure-1.png" width="1008" />
 
 ### Soil processes
 
 ### PNG import
+
+``` r
+
+photo_Ah_path <- system.file("extdata", "photo_example.png", package = "soilprofile2")
+photo_Ah <- png_import(photo_Ah_path, sf_example[1,], raster2polygon = F)
+
+
+sf_example %>% 
+  ggplot() +
+  geom_sf(fill = sf_example$rgb_col) +
+  geom_sf(data = str_all, fill = "black") +
+  ggspatial::layer_spatial(photo_Ah)
+```
+
+<img src="README-PNG-1.png" width="1008" />
+
+``` r
+  soil_theme()
+#> List of 4
+#>  $ axis.title.x    : list()
+#>   ..- attr(*, "class")= chr [1:2] "element_blank" "element"
+#>  $ axis.text.x     : list()
+#>   ..- attr(*, "class")= chr [1:2] "element_blank" "element"
+#>  $ axis.ticks.x    : list()
+#>   ..- attr(*, "class")= chr [1:2] "element_blank" "element"
+#>  $ panel.background: list()
+#>   ..- attr(*, "class")= chr [1:2] "element_blank" "element"
+#>  - attr(*, "class")= chr [1:2] "theme" "gg"
+#>  - attr(*, "complete")= logi FALSE
+#>  - attr(*, "validate")= logi TRUE
+```
 
 Contributing
 ------------

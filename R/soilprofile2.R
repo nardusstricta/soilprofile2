@@ -11,6 +11,7 @@
 #' @importFrom methods as
 #' @importFrom raster raster brick extent mask cut rasterToPolygons
 #' @importFrom magick image_read image_write
+#' @importFrom ggspatial layer_spatial
 
 NULL
 ## quiets concerns of R CMD check re: the .'s that appear in pipelines

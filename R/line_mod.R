@@ -44,10 +44,10 @@
 #' @export
 
 line_mod <- function(df_geom, line_attri, seed = 33){
-
+  y = NULL #filter_ not working
   tempX <- df_geom %>% 
     dplyr::group_by_(~ name) %>% 
-    dplyr::filter_("y" == max("y")) %>% 
+    dplyr::filter(y == max(y)) %>% 
     dplyr::left_join(line_attri, by = "name") %>% 
     dplyr::ungroup()
   

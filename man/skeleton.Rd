@@ -7,13 +7,53 @@
 skeleton(shape_mod, skeleton_mat)
 }
 \arguments{
-\item{shape_mod}{A simple feature class object with the base geometry. At least the following column names must be present in the attributes: name (horizont id), skel_ab (abundanz), skel_dim_from (dimension from), skel_dim_to (dimension to), area (area).}
+\item{shape_mod}{A simple feature class object with the base geometry of horizons. At least the following column names must be present in the attributes: horizont id (name), abundanz (skel_ab), minimum dimension in cm (skel_dim_to_from), maximum dimension in cm (skel_dim_to), area of the horizont (area).}
 
-\item{skeleton_mat}{A data frame with the following parameters (as column names) for specifying the rock form:  "name", "nSides", "smooth", "union", "phi", "strat", "cellnumber", "rotation"}
+\item{skeleton_mat}{A data frame with the following parameters (as column names) for specifying the rock form: "name" the horizon id as numeric; "nSides" number of sides; \link[smoothr]{smooth} "smooth" logical if should be smooth by; "union" logical value, should the individual stones be connected or each one gets its own outline?; "strat" logical value if the stones are stratified; "cellnumber" numerical value if the stones are stratified in how many horizontal strata should it be; "rotation" Angle of horizontal stratification; "phi" numerical value between 0 and 1. If greater than 0, each stone is drawn in the shape of an ellipse. As the value increases, the ellipse becomes flatter.}
 }
 \value{
-This function returns 12 X-value. 10 of this are new generatet by the \link[stats]{runif}  Funktion. If a parameter is unknown set 0 or NA in the cell.
+a simple feature with one row for each horizont. A column with the horizontal ID ("Name") and the geometry column with the skeleton content.
 }
 \description{
-generates new layer for the soil skeleton
+generates layer for the soil skeleton
+}
+\examples{
+ 
+#create an example dataset and modify the color and depths 
+library(dplyr) 
+library(ggplot2)
+df_example <-  data.frame(name = c("Ah", "Bv", "C"),
+                          depth = c("0-15", "15-43.4", "43.4-70"),
+                          col = c("7.5YR 2/1","10YR 4/3", "2.5Y 5/3"),
+                          skel_dim = c(".1-.5","1-2", "2-3"),
+                          skel_ab = c(0.1, 0.4, .8)) \%>\%
+  data_mod()
+
+#Set coordinates, four points on each horizon
+cord_example  <-  cord_setting(df_example, plot_width = 2)
+
+#create a simple feature: Each line represents a horizon
+#with one polygon as geometry.
+sf_example <- sf_polygon(df_geom = cord_example,
+                         df_attri = df_example)
+#data frame with specific parameters for the soil skeleton content
+
+skeleton_mat <- data.frame(
+  name = c(1,2, 3),
+  nSides = c(4,13, 20),
+  smooth = c(TRUE, TRUE, TRUE),
+  union = c(TRUE, FALSE, TRUE),
+  strat = c(FALSE, TRUE, FALSE),
+  cellnumber = c(0, 18, 0),
+  rotation = c(0,20, 0),
+  phi = c(0, 0, 0)
+)
+spoint <- skeleton(shape_mod = sf_example,
+                   skeleton_mat = skeleton_mat)
+#Plot the result:
+sf_example \%>\%
+  ggplot() +
+  geom_sf(fill = sf_example$rgb_col) +
+  geom_sf(data = spoint) +
+  soil_theme()
 }
