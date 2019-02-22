@@ -57,8 +57,8 @@ line_mod <- function(df_geom, line_attri, seed = 33){
   new_df_geom  <- data.frame(name = expand_x(numberX = line_attri$numberX,
                                         name = line_attri$name)) %>% 
     dplyr::left_join(tempX, by = "name") %>% 
-    dplyr::group_by_(~name) %>% 
-    dplyr::mutate_(x = ~ sample(seq(min(x),max(x), .1), n(), replace = TRUE)) %>% 
+    dplyr::rowwise() %>% 
+    dplyr::mutate_(x = ~ sample(seq(min(x),max(x), .1), n())) %>% 
     dplyr::mutate_(y = ~ rnorm(n(), mean = max(y), sd = sd)) %>% 
     dplyr::union_all(tempX) %>% 
     dplyr::arrange_(~ x) %>% 

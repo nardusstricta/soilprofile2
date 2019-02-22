@@ -4,12 +4,14 @@
 \alias{skeleton}
 \title{soil skeleton}
 \usage{
-skeleton(shape_mod, skeleton_mat)
+skeleton(shape_mod, skeleton_mat, seed = 34)
 }
 \arguments{
 \item{shape_mod}{A simple feature class object with the base geometry of horizons. At least the following column names must be present in the attributes: horizont id (name), abundanz (skel_ab), minimum dimension in cm (skel_dim_to_from), maximum dimension in cm (skel_dim_to), area of the horizont (area).}
 
 \item{skeleton_mat}{A data frame with the following parameters (as column names) for specifying the rock form: "name" the horizon id as numeric; "nSides" number of sides; \link[smoothr]{smooth} "smooth" logical if should be smooth by; "union" logical value, should the individual stones be connected or each one gets its own outline?; "strat" logical value if the stones are stratified; "cellnumber" numerical value if the stones are stratified in how many horizontal strata should it be; "rotation" Angle of horizontal stratification; "phi" numerical value between 0 and 1. If greater than 0, each stone is drawn in the shape of an ellipse. As the value increases, the ellipse becomes flatter.}
+
+\item{seed}{set seed for reproducible results}
 }
 \value{
 a simple feature with one row for each horizont. A column with the horizontal ID ("Name") and the geometry column with the skeleton content.

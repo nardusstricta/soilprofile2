@@ -4,7 +4,7 @@
 \name{soil_example_sf}
 \alias{soil_example_sf}
 \title{Soilprofile example}
-\format{An object of class \code{sf} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 3 rows and 15 columns.}
+\format{An object of class \code{sf} (inherits from \code{tbl_df}, \code{tbl}, \code{data.frame}) with 3 rows and 16 columns.}
 \usage{
 soil_example_sf
 }

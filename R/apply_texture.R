@@ -43,8 +43,9 @@
 #'                           col = c("7.5YR 2/1","10YR 4/3", "2.5Y 5/3"),
 #'                           skel_dim = c(".5-1","1-2", "2-3"),
 #'                           skel_ab = c(0.2, 0.6, 1.9),
-#'                           grain_size = c(1, 0, 1),
-#'                           grain_sd = c(1, 0, 1)) %>%
+#'                           clay = c(.7, 0, 0),
+#'                           silt = c(.2, 0, 0), 
+#'                           sand = c(.1, 0, 1)) %>%
 #'   data_mod()
 #' 
 #' #Set coordinates, four points on each horizon
@@ -78,17 +79,32 @@ apply_texture <- function(shape, buffer = -1, background = "random"){
   attr_shape <- data.frame(
     rgb_col = shape$rgb_col, 
     nameC = shape$nameC, 
-    grain_size = ifelse(rep("grain_size" %in% names(shape), nrow(shape)), shape$grain_size, NA), 
-    grain_sd = ifelse(rep("grain_sd" %in% names(shape), nrow(shape)), shape$grain_sd, NA)
+    clay = ifelse(rep("clay" %in% names(shape), nrow(shape)), shape$clay, 0), 
+    silt = ifelse(rep("silt" %in% names(shape), nrow(shape)), shape$silt, 0),
+    sand = ifelse(rep("sand" %in% names(shape), nrow(shape)), shape$sand, 0)
   )
+  
+  #to get the maximum of grain:
+  help_mat <- matrix(NA, nrow(attr_shape), 3)
+  help_mat <- attr_shape[,3:5]
+  t1 <- numeric(nrow(attr_shape))
+  for (i in 1:nrow(help_mat)){
+    if(max(help_mat[i,]) == 0){
+      t1[i] <- 0
+    }else{
+      t1[i] <- grep(max(help_mat[i,]), help_mat[i,])[length(grep(max(help_mat[i,]), help_mat[i,]))] 
+    }
+    
+  }
     
   texture_sf <- shape %>% 
     dplyr::mutate_(background = ~ ifelse(background == "random",
                                          sample(0:1, nrow(.),
-                                                replace = TRUE), background)) %>% 
+                                                replace = TRUE), background)) %>%
+    dplyr::mutate_(grain_size = ~t1) %>%
     dplyr::rowwise() %>% 
-    dplyr::mutate_(grain_size = ~ ifelse("grain_size" %in% names(.),
-                                         grain_size, 0)) %>% 
+    dplyr::mutate_(grain_size = ~ ifelse(!any(c("clay", "silt", "sand")) %in%
+                                         names(.), grain_size, 0)) %>% 
     dplyr::mutate_(fun = ~ if_else(grain_size != 0, "fun_grain_size", 
                                 "random_line_pattern")) %>%
     dplyr::mutate_(fun = ~ ifelse(exists(as.character(nameC)),
@@ -104,10 +120,10 @@ apply_texture <- function(shape, buffer = -1, background = "random"){
         texture(shape = texture_sf[i,],
                 fun_horizont = texture_sf$fun[[i]],
                 buffer = buffer,
-                if("grain_size" %in% colnames(texture_sf) && texture_sf$grain_size[i] != 0){
+                if(texture_sf$grain_size[i] != 0){
                   par_size = texture_sf$grain_size[i]
                 } else NA,
-                if("grain_size" %in% colnames(texture_sf) && texture_sf$grain_size[i] != 0){
+                if(texture_sf$grain_size[i] != 0){
                   background = texture_sf$background[i] 
                 } else NA
         )

@@ -23,7 +23,7 @@ process_layer <- function(polygon, number = 1, buffer = 1, rotation = 45, ...){
   
   #union additional layers
   geom_list <- list(...)
-  
+  geom_list <- geom_list[!unlist(lapply(geom_list, is.null))]
   if(length(geom_list) >= 1){
     geom <-  sapply(geom_list, sf::st_union) 
     geom1 <- do.call(

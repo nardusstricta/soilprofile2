@@ -315,11 +315,12 @@ soil_example_sf %>%
   soil_theme()
 ```
 
-<img src="README-processes3-1.png" width="1008" /> \#\#\# PNG import Let's assume we have an extraordinarily good photo that represents the horizon better than any other attempt. Then we can add the photo to the soil profile. Of course it can also be a photo from a drawing or a Photoshop project. In the package we have one example file:
+<img src="README-processes3-1.png" width="1008" /> \#\#\# Photoimport Let's assume we have an extraordinarily good photo that represents the horizon better than any other attempt. Then we can add the photo to the soil profile. Of course it can also be a photo from a drawing or a Photoshop project. In the package we have one example file:
 
 ``` r
 #get the path
-photo_Ah_path <- system.file("extdata", "photo_example.png", package = "soilprofile2")
+photo_Ah_path <- system.file("extdata", "photo_example.png", 
+                             package = "soilprofile2")
 
 #mask an extent the photo tho the first horizont:
 photo_Ah <- png_import(photo_Ah_path, sf_example[1,], raster2polygon = F)
@@ -334,3 +335,6 @@ sf_example %>%
 ```
 
 <img src="README-PNG-1.png" width="1008" />
+
+Contributing
+------------

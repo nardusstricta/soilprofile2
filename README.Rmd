@@ -51,8 +51,9 @@ df_example <- data.frame(name = c("Ah", "Bvh", "BvCv"),
                          col = c("7.5YR 2/1","10YR 4/3", "2.5Y 5/3"),
                          skel_dim = c(".1-.8","1-2", "2-3"),
                          skel_ab = c(0.2, 0.4, .9),
-                         grain_size = c(3, 2, 1),
-                         grain_sd = c(3, 10, 4)) %>% 
+                         clay = c(1, 0, 0),
+                         silt = c(0, 0, .5),
+                         sand = c(0, 0, .5)) %>% 
   data_mod()
 
 #set coordinates, four points on each horizon 
@@ -310,13 +311,16 @@ soil_example_sf %>%
   soil_theme()
 
 ```
-### PNG import
+
+### Photoimport
+
 Let's assume we have an extraordinarily good photo that represents the horizon better than any other attempt. Then we can add the photo to the soil profile. Of course it can also be a photo from a drawing or a Photoshop project. In the package we have one example file:
 
 
 ```{r PNG, dpi = 144}
 #get the path
-photo_Ah_path <- system.file("extdata", "photo_example.png", package = "soilprofile2")
+photo_Ah_path <- system.file("extdata", "photo_example.png", 
+                             package = "soilprofile2")
 
 #mask an extent the photo tho the first horizont:
 photo_Ah <- png_import(photo_Ah_path, sf_example[1,], raster2polygon = F)
@@ -330,6 +334,8 @@ sf_example %>%
   soil_theme()
 
 ```
+
+## Contributing
 
 
 

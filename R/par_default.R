@@ -5,12 +5,13 @@
 #' @param polygon A simple feature file with plot information see \link[soilprofile2]{apply_texture}
 #' @param size default size
 #' @param outline_col dafault outline color of the horizont
+#' @param size_grain the default is 1
 #' @return A unit multipolygon (sf) with one parID column
 #'
 #' @export
 
 
-par_default <-  function(polygon, size = 0.5, outline_col = "grey"){
+par_default <-  function(polygon, size = 0.5, outline_col = "grey", size_grain = 1){
   
   #Füllen der Standardeinstellungen:
   polygon <- polygon %>% 
@@ -44,7 +45,7 @@ par_default <-  function(polygon, size = 0.5, outline_col = "grey"){
                         19
            ), 
            size = ~ ifelse(sf::st_geometry_type(geometry) == "POINT",
-                           rgamma(1, shape = as.numeric(grain_size), rate = as.numeric(grain_sd)), 
+                           sample(1:3 * size_grain, 1, prob = c(clay, silt, sand)), 
                            size
            )
            
@@ -102,4 +103,3 @@ soil_legend <- function(df_legend){
     ggplot2::ggtitle("Legend")
   
 }
-

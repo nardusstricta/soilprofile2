@@ -4,7 +4,8 @@
 \alias{par_default}
 \title{par_default}
 \usage{
-par_default(polygon, size = 0.5, outline_col = "grey")
+par_default(polygon, size = 0.5, outline_col = "grey",
+  size_grain = 1)
 }
 \arguments{
 \item{polygon}{A simple feature file with plot information see \link[soilprofile2]{apply_texture}}
@@ -12,6 +13,8 @@ par_default(polygon, size = 0.5, outline_col = "grey")
 \item{size}{default size}
 
 \item{outline_col}{dafault outline color of the horizont}
+
+\item{size_grain}{the default is 1}
 }
 \value{
 A unit multipolygon (sf) with one parID column

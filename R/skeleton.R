@@ -5,6 +5,7 @@
 #' @param shape_mod A simple feature class object with the base geometry of horizons. At least the following column names must be present in the attributes: horizont id (name), abundanz (skel_ab), minimum dimension in cm (skel_dim_to_from), maximum dimension in cm (skel_dim_to), area of the horizont (area). 
 #' 
 #' @param skeleton_mat A data frame with the following parameters (as column names) for specifying the rock form: "name" the horizon id as numeric; "nSides" number of sides; \link[smoothr]{smooth} "smooth" logical if should be smooth by; "union" logical value, should the individual stones be connected or each one gets its own outline?; "strat" logical value if the stones are stratified; "cellnumber" numerical value if the stones are stratified in how many horizontal strata should it be; "rotation" Angle of horizontal stratification; "phi" numerical value between 0 and 1. If greater than 0, each stone is drawn in the shape of an ellipse. As the value increases, the ellipse becomes flatter.
+#' @param seed set seed for reproducible results
 #'
 #' @return a simple feature with one row for each horizont. A column with the horizontal ID ("Name") and the geometry column with the skeleton content.
 #' @examples  
@@ -48,7 +49,7 @@
 #' @export
 
 
-skeleton <- function(shape_mod, skeleton_mat){
+skeleton <- function(shape_mod, skeleton_mat, seed = 34){
   
   stopifnot(c("sf", "data.frame") %in% class(shape_mod)  &
               class(skeleton_mat) == "data.frame")
@@ -60,7 +61,7 @@ skeleton <- function(shape_mod, skeleton_mat){
               "phi", "strat", "cellnumber", "rotation") %in% 
               colnames(skeleton_mat))
 
-
+  set.seed(seed)
   shape_s  <- shape_mod %>%
     #select the default parameter: 
     dplyr::select_(~ name, ~ skel_ab, ~ skel_dim_from, ~ skel_dim_to, ~ area) %>% 
@@ -99,7 +100,7 @@ skeleton <- function(shape_mod, skeleton_mat){
       sf::st_union()
     
   }
-
+  
   #extract the point geometries (the coordinates in which the rock is placed)
   spoint <-  sf::st_intersection(shape_s,  shape_mod$geometry) %>% 
     sf::st_collection_extract(type = "POINT") %>%  

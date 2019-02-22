@@ -108,25 +108,25 @@ fun_grain_size <- function(polygon, ...){
   
   if(background != TRUE){
     
-    x_number <-  sqrt(sf::st_area(polygon)) / par_size
-    y_number <-  sqrt(sf::st_area(polygon)) / par_size
+    x_number <-  round(sqrt(sf::st_area(polygon)) / par_size)
+    y_number <-  round(sqrt(sf::st_area(polygon)) / par_size)
     
     erg <- basic_regular_point(polygon = polygon,
                                cellnumber =  c(x_number, y_number), 
-                               rotation = sample(-70:70, 1)) %>% 
+                               rotation = 45) %>% 
       sf::st_cast("POINT") %>% 
       dplyr::mutate_(par_ID = ~ 1:nrow(.)) 
     
   }else{
     polygon1 <- sf::st_buffer(polygon, -1)
     
-    x_number <-  sqrt(sf::st_area(polygon)) / par_size
-    y_number <-  sqrt(sf::st_area(polygon)) / par_size
+    x_number <-  round(sqrt(sf::st_area(polygon)) / par_size)
+    y_number <-  round(sqrt(sf::st_area(polygon)) / par_size)
 
     
     tem_point <- basic_regular_point(polygon = polygon1,
                                      cellnumber =  c(x_number, y_number), 
-                                     rotation = sample(-70:70, 1)) %>% 
+                                     rotation = 45) %>% 
       sf::st_cast("POINT")
     erg <- sf::st_sf(par_ID = 1:(nrow(tem_point)+1),
                           geometry = c(sf::st_geometry(polygon), 

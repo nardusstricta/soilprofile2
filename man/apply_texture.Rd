@@ -53,8 +53,9 @@ df_example <-  data.frame(name = c("Bt", "AhBv", "Cve"),
                           col = c("7.5YR 2/1","10YR 4/3", "2.5Y 5/3"),
                           skel_dim = c(".5-1","1-2", "2-3"),
                           skel_ab = c(0.2, 0.6, 1.9),
-                          grain_size = c(1, 0, 1),
-                          grain_sd = c(1, 0, 1)) \%>\%
+                          clay = c(.7, 0, 0),
+                          silt = c(.2, 0, 0), 
+                          sand = c(.1, 0, 1)) \%>\%
   data_mod()
 
 #Set coordinates, four points on each horizon
