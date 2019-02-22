@@ -38,8 +38,9 @@ df_example <- data.frame(name = c("Ah", "Bvh", "BvCv"),
                          col = c("7.5YR 2/1","10YR 4/3", "2.5Y 5/3"),
                          skel_dim = c(".1-.8","1-2", "2-3"),
                          skel_ab = c(0.2, 0.4, .9),
-                         grain_size = c(3, 2, 1),
-                         grain_sd = c(3, 10, 4)) %>% 
+                         clay = c(0, .8, 0),
+                         silt = c(0, .5, .5),
+                         sand = c(0, .2, .5)) %>% 
   data_mod()
 
 #set coordinates, four points on each horizon 
@@ -185,7 +186,7 @@ If we don't want a black and white representation and to adjust the size of the 
 
 ``` r
 ## creation of the patterns
-texture_example <- apply_texture(shape = example_profile,
+texture_example <- apply_texture(shape = sf_example,
                                  buffer = -1, 
                                  background = c(T, T, T)
                                  )
@@ -315,7 +316,11 @@ soil_example_sf %>%
   soil_theme()
 ```
 
-<img src="README-processes3-1.png" width="1008" /> \#\#\# Photoimport Let's assume we have an extraordinarily good photo that represents the horizon better than any other attempt. Then we can add the photo to the soil profile. Of course it can also be a photo from a drawing or a Photoshop project. In the package we have one example file:
+<img src="README-processes3-1.png" width="1008" />
+
+### Photoimport
+
+Let's assume we have an extraordinarily good photo that represents the horizon better than any other attempt. Then we can add the photo to the soil profile. Of course it can also be a photo from a drawing or a Photoshop project. In the package we have one example file:
 
 ``` r
 #get the path

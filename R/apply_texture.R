@@ -92,7 +92,7 @@ apply_texture <- function(shape, buffer = -1, background = "random"){
     if(max(help_mat[i,]) == 0){
       t1[i] <- 0
     }else{
-      t1[i] <- grep(max(help_mat[i,]), help_mat[i,])[length(grep(max(help_mat[i,]), help_mat[i,]))] 
+      t1[i] <- max(which(help_mat[i,]!= 0))
     }
     
   }
