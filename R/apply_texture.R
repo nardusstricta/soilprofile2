@@ -18,8 +18,9 @@
 #'
 #'   
 #' 
-#' @param shape A simple features file with one row for each hoizon. At least with one geometry column and one "nameC" column ("C" for character). The columns grain_size and grain_sd specify the texture. If the value is not zero or NA, a point grid is created for the texture. With the function par_dafault the grain size can be changed. 
+#' @param shape A simple features file with one row for each hoizon. At least with one geometry column and one "nameC" column ("C" for character). The variables clay silt and sand are optional and will be specified in the respective proportions. The sum must be one. if at least one value isn't zero, a point grid is created for the texture. With the function par_dafault the grain size can be changed. 
 #' @param buffer Usually a negative value that indicates the distance between the pattern and the horizon boundary. 
+#' @param dist_size distance between texture points
 #' @param background whether the points should have a background (only if grain_size information exists). Either a string with 0 and 1 or the default "random", then the values are selected randomly. 
 #' 
 #' @return This function returns a new Simple Features which
@@ -71,7 +72,7 @@
 #' @author Gabriel Holz
 
 
-apply_texture <- function(shape, buffer = -1, background = "random"){
+apply_texture <- function(shape, buffer = -1, dist_size = 1, background = "random"){
   
   stopifnot("sf" %in% class(shape))
   stopifnot("nameC" %in% colnames(shape))
@@ -96,7 +97,7 @@ apply_texture <- function(shape, buffer = -1, background = "random"){
     }
     
   }
-    
+  t1 <- t1 * dist_size  
   texture_sf <- shape %>% 
     dplyr::mutate_(background = ~ ifelse(background == "random",
                                          sample(0:1, nrow(.),

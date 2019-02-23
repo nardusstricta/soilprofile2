@@ -50,7 +50,7 @@ par_default <-  function(polygon, size = 0.5, outline_col = "grey", size_grain =
            )
            
     ) %>% 
-    sf::st_sf()
+    sf::st_sf(geometry = .)
   
   return(polygon)
 }

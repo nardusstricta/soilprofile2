@@ -4,12 +4,15 @@
 \alias{apply_texture}
 \title{This is a wrapper function which applies the texture function}
 \usage{
-apply_texture(shape, buffer = -1, background = "random")
+apply_texture(shape, buffer = -1, dist_size = 1,
+  background = "random")
 }
 \arguments{
-\item{shape}{A simple features file with one row for each hoizon. At least with one geometry column and one "nameC" column ("C" for character). The columns grain_size and grain_sd specify the texture. If the value is not zero or NA, a point grid is created for the texture. With the function par_dafault the grain size can be changed.}
+\item{shape}{A simple features file with one row for each hoizon. At least with one geometry column and one "nameC" column ("C" for character). The variables clay silt and sand are optional and will be specified in the respective proportions. The sum must be one. if at least one value isn't zero, a point grid is created for the texture. With the function par_dafault the grain size can be changed.}
 
 \item{buffer}{Usually a negative value that indicates the distance between the pattern and the horizon boundary.}
+
+\item{dist_size}{distance between texture points}
 
 \item{background}{whether the points should have a background (only if grain_size information exists). Either a string with 0 and 1 or the default "random", then the values are selected randomly.}
 }

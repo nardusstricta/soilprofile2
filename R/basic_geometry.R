@@ -7,6 +7,7 @@
 #' @param line_length The size of the buffer around each point. All points in this area will be combined to one line. This means if the buffer is larger, the lines become longer on average. 
 #' @param variation The standard deviation of the random factor for the buffer size. Increasing the value will result in different lengths of the lines.
 #' @param smoothness Passed on to \link[smoothr]{smooth}  fuction 
+#' @param seed set seed for reproducible results 
 #' @return A Linedataset as Simple Feature with  a parID column
 #' @examples 
 #' #create an example dataset
@@ -47,11 +48,12 @@ basic_random_line <- function(polygon,
                               number = 300, 
                               line_length = .8, 
                               variation = 1,
-                              smoothness = 5){
+                              smoothness = 5, 
+                              seed = 34){
   stopifnot("sf" %in% class(polygon) | 
               "sfc_MULTIPOLYGON" %in% class(polygon) |
               "sfc_POLYGON" %in% class(polygon))
-  
+  set.seed(seed)
   point_temp <- sf::st_sample(polygon, number)
   
   geom <- do.call(

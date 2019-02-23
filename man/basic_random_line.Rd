@@ -5,7 +5,7 @@
 \title{basic random line}
 \usage{
 basic_random_line(polygon, number = 300, line_length = 0.8,
-  variation = 1, smoothness = 5)
+  variation = 1, smoothness = 5, seed = 34)
 }
 \arguments{
 \item{polygon}{A Simple Feature or  just a "sfc_MULTIPOLYGON" or "sfc_POLYGON" geometry.}
@@ -17,6 +17,8 @@ basic_random_line(polygon, number = 300, line_length = 0.8,
 \item{variation}{The standard deviation of the random factor for the buffer size. Increasing the value will result in different lengths of the lines.}
 
 \item{smoothness}{Passed on to \link[smoothr]{smooth}  fuction}
+
+\item{seed}{set seed for reproducible results}
 }
 \value{
 A Linedataset as Simple Feature with  a parID column

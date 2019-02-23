@@ -103,7 +103,7 @@ df_smooth <- data.frame(
   nSides = c(10), #from 10 to 50
   rate = c(.6), # from 12 to 40 
   #and with shape  from .1 to .6
-  name = c(2)
+  name = c(3)
 )
 
 #Applying the function
@@ -186,7 +186,7 @@ If we don't want a black and white representation and to adjust the size of the 
 
 ``` r
 ## creation of the patterns
-texture_example <- apply_texture(shape = sf_example,
+texture_example <- apply_texture(shape = example_profile,
                                  buffer = -1, 
                                  background = c(T, T, T)
                                  )
