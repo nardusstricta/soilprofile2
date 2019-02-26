@@ -36,7 +36,7 @@ save_par_setting <- function(name, variable, value, par_ID){
 #'
 #' @export
 save_struct_poly <- function(name, path){
-  polygon1 <- sf::st_polygon(list(rbind(c(0,0), c(1,0), c(1,1), c(0,1), c(0,0)))) %>% 
+  polygon1 <- sf::st_polygon(list(rbind(c(0,0), c(1,0), c(1,-1), c(0,-1), c(0,0)))) %>% 
     sf::st_sfc() %>% 
     sf::st_sf()
   
