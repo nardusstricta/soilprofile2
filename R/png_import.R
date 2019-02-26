@@ -69,7 +69,7 @@ png_import <- function(file_path, horizont, smoothness = 2, raster2polygon = T){
   if(raster2polygon == T){
     r <- raster::raster(tiff_file)
     }else{
-      r <- raster::brick(tiff_file)
+     r <- raster::brick(tiff_file)
   }
   
   

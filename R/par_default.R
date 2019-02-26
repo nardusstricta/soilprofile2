@@ -13,46 +13,48 @@
 
 par_default <-  function(polygon, size = 0.5, outline_col = "grey", size_grain = 1){
   
-  #Füllen der Standardeinstellungen:
-  polygon <- polygon %>% 
-    dplyr::rowwise() %>% 
+  polygon %>% 
+    #dplyr::rowwise() %>% 
     dplyr::mutate_(col = 
                      ~ ifelse(par_ID != 1 & is.na(col),
-                    "grey", 
-                    col
-             ),
-           col = 
-             ~  ifelse(par_ID == 1,
-                       outline_col, 
-                       col
-             ),
-           bgc = 
-             ~ ifelse(sf::st_geometry_type(geometry) == "MULTIPOLYGON" & is.na(bgc),
-                      "grey40", 
-                      bgc
-             ),
-           bgc = ~ ifelse(sf::st_geometry_type(geometry) == "POLYGON", 
-                          as.character(rgb_col),
-                          bgc
-           ),
-           linetype = 
-             ~ ifelse(sf::st_geometry_type(geometry) == "MULTILINESTRING" & is.na(linetype) & par_ID != 1,
-                    as.integer(sample(1:6, 1)), 
-                    1
-             ),
-           pch = ~ ifelse(sf::st_geometry_type(geometry) == "MULTIPOINT" & is.na(linetype) & par_ID != 1,
-                        as.integer(sample(25, 1)), 
-                        19
-           ), 
-           size = ~ ifelse(sf::st_geometry_type(geometry) == "POINT",
-                           sample(1:3 * size_grain, 1, prob = c(clay, silt, sand)), 
-                           size
-           )
-           
+                              "grey", 
+                              col
+                     ),
+                   col = 
+                     ~  ifelse(par_ID == 1,
+                               outline_col, 
+                               col
+                     )) %>% 
+    dplyr::mutate_(
+      bgc =
+        ~ ifelse(sf::st_geometry_type(geometry) == "MULTIPOLYGON" & is.na(bgc),
+                 "grey40",
+                 bgc
+        )) %>% 
+    dplyr::mutate_(
+      bgc = ~ ifelse(sf::st_geometry_type(geometry) == "POLYGON",
+                     as.character(rgb_col),
+                     bgc
+      ),
+      linetype =
+        ~ ifelse(sf::st_geometry_type(geometry) == "MULTILINESTRING" & is.na(linetype) & par_ID != 1,
+                 1,
+                 1
+        ),
+      pch = ~ ifelse(sf::st_geometry_type(geometry) == "MULTIPOINT" & is.na(linetype) & par_ID != 1,
+                     as.integer(sample(25, 1)),
+                     19
+      )) %>% 
+    dplyr::rowwise() %>% 
+    dplyr::mutate_(
+      size = ~ ifelse(sf::st_geometry_type(geometry) == "POINT",
+                      sample(1:3 * size_grain, 1, prob = c(clay, silt, sand)),
+                      size
+      )
+      
     ) %>% 
     sf::st_sf(geometry = .)
-  
-  return(polygon)
+
 }
 
 #' soil_theme 

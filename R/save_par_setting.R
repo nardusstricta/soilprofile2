@@ -26,6 +26,31 @@ save_par_setting <- function(name, variable, value, par_ID){
   usethis::use_data(df_par_wide, overwrite = TRUE, internal = TRUE)
 }
 
+#' save_struct_poly
+#'
+#' This function stores the structure. Input is a raster (png) and output is a polygon (sf) needed to store the data for the Shiny app
+#'
+#' @param name name of the function structure
+#' @param path  path of the png
+#' @return A unit sf layer
+#'
+#' @export
+save_struct_poly <- function(name, path){
+  polygon1 <- sf::st_polygon(list(rbind(c(0,0), c(1,0), c(1,1), c(0,1), c(0,0)))) %>% 
+    sf::st_sfc() %>% 
+    sf::st_sf()
+  
+  str_BvCv <- system.file("extdata", path, package = "soilprofile2")
+  
+  struc_temp <- multiple_png(polygon1,  str_BvCv) %>% 
+    dplyr::mutate(name = name)
+  
+  struc_poly <- struc_temp %>% 
+    rbind(struc_poly)
+  
+  usethis::use_data(struc_poly, overwrite = TRUE)
+}
+
 
 
 

@@ -43,3 +43,9 @@
 #'   \item{geometry}{<MULTIPOLYGON>}
 #' }
 "process_symbols"
+#' structure polygons
+#' 
+#' structure polygons (sf) needed for the Shiny app
+#'
+#' @format Simple feature collection with ...
+"struc_poly"

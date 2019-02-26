@@ -165,6 +165,7 @@ root_example <- basic_random_line(polygon = smooth_profile[1,],
                             line_length = .5, 
                             variation = .4,
                             smoothness = 5)
+
 smooth_profile %>%
   ggplot() +
   geom_sf(fill = smooth_profile$rgb_col) +
