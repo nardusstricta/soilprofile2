@@ -134,10 +134,10 @@ skeleton <- function(shape_mod, skeleton_mat, seed = 34){
      dplyr::filter_(~ union == FALSE) %>% 
      dplyr::select_(~ name) 
    
-   erg <- rbind(poly1, poly2) %>% 
-     dplyr::group_by_(~name) %>% 
-     dplyr::summarise(do_union = F) %>% 
-     dplyr::ungroup()
+   erg <- rbind(poly1, poly2) #%>% 
+     # dplyr::group_by_(~name) %>% 
+     # dplyr::summarise(do_union = F) %>% 
+     # dplyr::ungroup()
        
 
   return(erg)

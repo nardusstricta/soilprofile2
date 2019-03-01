@@ -11,15 +11,15 @@
 #'
 #' @export
 
-process_layer <- function(polygon, number = 1, buffer = 1, rotation = 45, ...){
+process_layer <- function(polygon, number = 1, buffer = 1.5, rotation = 45, ...){
   #bbox from polygon...
   polygon <- matrix(c(polygon[1], polygon[2], polygon[3],
                       polygon[2], polygon[3], polygon[4], 
                       polygon[1], polygon[4], polygon[1], 
                       polygon[2]), ncol=2, byrow=TRUE)
   #build buffer
-  polygon <- sf::st_sfc(sf::st_polygon(list(polygon)))
-  polygon <- sf::st_buffer(polygon, -buffer)
+  polygon <- sf::st_sfc(sf::st_polygon(list(polygon))) %>% 
+    sf::st_buffer(-buffer)
   
   #union additional layers
   geom_list <- list(...)
@@ -38,11 +38,15 @@ process_layer <- function(polygon, number = 1, buffer = 1, rotation = 45, ...){
     #if point make buffer:
     
     if(any(sf::st_geometry_type(geom1) == "POINT")){
-      geom2 <- sf::st_collection_extract(geom1, "POINT") %>% 
+      geom3 <- sf::st_collection_extract(geom1, "POINT") %>% 
         sf::st_buffer(buffer)
-      geom3 <- sf::st_collection_extract(geom1, "POLYGON") %>% 
-        sf::st_buffer(buffer) %>% 
-        rbind(geom2)
+      if(any(sf::st_geometry_type(geom1) == "POLYGON")){
+        geom3 <- sf::st_collection_extract(geom1, "POLYGON") %>% 
+          sf::st_buffer(buffer) %>% 
+          rbind(geom3)
+      }
+      
+
     }else{
       geom3 <- sf::st_buffer(geom1, buffer)
     }
@@ -52,6 +56,7 @@ process_layer <- function(polygon, number = 1, buffer = 1, rotation = 45, ...){
       sf::st_cast("POLYGON") %>% 
       sf::st_sf(geometry = ., area = sf::st_area(.)) %>% 
       dplyr::filter_(~ area > 2)
+    
     if(nrow(geom4)==0){
       return(NULL)
     }else{

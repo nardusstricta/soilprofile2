@@ -4,7 +4,7 @@
 \alias{process_layer}
 \title{process_layer}
 \usage{
-process_layer(polygon, number = 1, buffer = 1, rotation = 45, ...)
+process_layer(polygon, number = 1, buffer = 1.5, rotation = 45, ...)
 }
 \arguments{
 \item{polygon}{four coordinates..}

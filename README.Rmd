@@ -325,7 +325,6 @@ photo_Ah_path <- system.file("extdata", "photo_example.png",
 
 #mask an extent the photo tho the first horizont:
 photo_Ah <- png_import(photo_Ah_path, sf_example[1,], raster2polygon = F)
-
 #plot the result:
 sf_example %>% 
   ggplot() +
