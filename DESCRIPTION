@@ -30,6 +30,6 @@ Imports:
     stats (>= 3.4.4),
     utils (>= 3.4.4),
     methods (>= 3.4.4),
-    ggspatial (>= 1.0.4),
+    ggspatial (>= 1.0.3),
     rgeos (>= 0.4-2)
     
