@@ -27,7 +27,8 @@ Funktion to modifide the transition of Soil horizon, by adding the Buffer- size,
 }
 \examples{
 data_example <- data.frame(name = c("Ah", "Bv"),
-                           depth = c("0-22", "22-33.434"),
+                           from = c(0, 22),
+                           to = c(22, 33.434),
                            col = c("10YR 4/3", "5Y 5/3"),
                            skel_dim= c("3-30","45-50"))
 

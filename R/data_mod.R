@@ -15,7 +15,8 @@
 #' depth: ("from1", "to1"), "value_col", "chroma_col", "rgb_col" (calculated using the function \link[aqp]{munsell2rgb}, nameC (A new name column, the old one was replaced with an numeric id). skel_dim_from and skel_dim_to (seperate the skel dimension column))
 #' @examples 
 #' data_example <- data.frame(name = c("Ah", "Bv"),
-#'                            depth = c("0-22", "22-33.434"),
+#'                            from = c(0, 22),
+#'                            to = c(22, 33.434),
 #'                            col = c("10YR 4/3", "5Y 5/3"),
 #'                            skel_dim= c("3-30","45-50"))
 #' 
@@ -26,14 +27,14 @@
 data_mod <- function(df_org){
   #depth = to1 = from1 = NULL
   stopifnot("data.frame" %in% class(df_org))
-  stopifnot(c("depth", "name", "skel_dim", "col") %in% colnames(df_org))
+  stopifnot(c("from", "to", "name", "skel_dim", "col") %in% colnames(df_org))
   
   df_org %>% 
-    tidyr::separate_("depth", c("from1", "to1"), "-") %>% 
+    #tidyr::separate_("depth", c("from1", "to1"), " - ") %>% 
     dplyr::mutate_(nameC = ~ name) %>%
     dplyr::mutate_(name = ~ 1:nrow(df_org)) %>%
-    dplyr::mutate_(from1 = ~ as.numeric(from1)) %>% 
-    dplyr::mutate_(to1 = ~ as.numeric(to1)) %>%
+    dplyr::mutate_(from1 = ~ as.numeric(from)) %>% 
+    dplyr::mutate_(to1 = ~ as.numeric(to)) %>%
     tidyr::separate_("skel_dim",
                      c("skel_dim_from", "skel_dim_to"), "-", convert = T) %>% 
     tidyr::separate_("col", c("hue_col", "temp"), " ") %>% 

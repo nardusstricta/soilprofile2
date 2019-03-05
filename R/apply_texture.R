@@ -40,7 +40,8 @@
 #' library(dplyr) 
 #' library(ggplot2)
 #' df_example <-  data.frame(name = c("Bt", "AhBv", "Cve"),
-#'                           depth = c("0-15", "15-43.4", "43.4-70"),
+#'                           from = c(0, 15, 43.4),
+#'                           to = c(15, 43.4, 70),
 #'                           col = c("7.5YR 2/1","10YR 4/3", "2.5Y 5/3"),
 #'                           skel_dim = c(".5-1","1-2", "2-3"),
 #'                           skel_ab = c(0.2, 0.6, 1.9),
