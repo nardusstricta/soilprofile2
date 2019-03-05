@@ -117,7 +117,7 @@ skeleton <- function(shape_mod, skeleton_mat, seed = 34){
   
   #clip the rockshape with the origen geometry
   spoint_clean <-  spoint_poly %>%
-    sf::st_intersection(shape_mod$geometry)
+    sf::st_intersection(sf::st_union(shape_mod$geometry))
 
   #smoth the rock geometry
    spoint_clean[which(spoint_clean$smooth == T),] <- 
