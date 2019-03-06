@@ -4,7 +4,7 @@
 \name{process_symbols}
 \alias{process_symbols}
 \title{process_symbols}
-\format{An object of class \code{data.frame} with 6 rows and 5 columns.}
+\format{An object of class \code{data.frame} with 9 rows and 5 columns.}
 \usage{
 process_symbols
 }
